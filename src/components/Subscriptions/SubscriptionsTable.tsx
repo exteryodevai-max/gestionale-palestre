@@ -24,10 +24,10 @@ export function SubscriptionsTable() {
         .select(`
           *,
           member:members(
-            nome, // Keep this line
-            cognome, // Keep this line
-            email, // Keep this line
-            stato // Keep this line
+            nome,
+            cognome,
+            email,
+            stato
           ),
           product:subscription_products(
             name,
