@@ -28,23 +28,28 @@ export function useAuth() {
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
+    console.log('useAuth useEffect: Inizio esecuzione. loading:', loading)
+    
     // Se Supabase non è configurato, usa la modalità demo
     if (!isSupabaseConfigured) {
       console.warn('⚠️ Supabase non configurato. Utilizzo modalità demo con utente fittizio.')
       setUser(DEMO_USER)
       setIsDemo(true)
       setLoading(false)
+      console.log('useAuth useEffect: Modalità demo attivata. loading impostato a false.')
       return
     }
     
     // Controlla la sessione corrente
     const checkSession = async () => {
+      console.log('checkSession: Inizio. loading:', loading)
       try {
         setLoading(true)
         setAuthError(null)
         
         // Ottieni la sessione corrente
         const { data: { session } } = await supabase.auth.getSession()
+        console.log('checkSession: Sessione ottenuta. sessione:', session ? 'presente' : 'assente')
         
         if (session) {
           // Ottieni i dati dell'utente dal database
@@ -67,9 +72,11 @@ export function useAuth() {
             await supabase.auth.signOut()
           } else {
             setUser(userData as User)
+            console.log('checkSession: Utente impostato:', userData.email)
           }
         } else {
           setUser(null)
+          console.log('checkSession: Nessuna sessione, utente impostato a null.')
         }
       } catch (error: any) {
         console.error('Errore nel controllo della sessione:', error)
@@ -77,6 +84,7 @@ export function useAuth() {
         setAuthError(`Errore di sistema: ${error.message}`)
       } finally {
         setLoading(false)
+        console.log('checkSession: Fine. loading impostato a false.')
       }
     }
     
@@ -84,6 +92,7 @@ export function useAuth() {
     
     // Ascolta i cambiamenti di autenticazione
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('onAuthStateChange: Evento:', event, 'loading:', loading)
       setLoading(true)
       setAuthError(null)
       
@@ -122,9 +131,11 @@ export function useAuth() {
         }
       } else if (event === 'SIGNED_OUT') {
         setUser(null)
+        console.log('onAuthStateChange: Utente disconnesso.')
       }
       
       setLoading(false)
+      console.log('onAuthStateChange: Fine. loading impostato a false.')
     })
     
     // Pulizia della sottoscrizione
