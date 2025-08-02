@@ -78,9 +78,9 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
         .from('users')
         .select('id')
         .eq('email', formData.email.trim())
-        .single()
+        .maybeSingle()
 
-      if (existingUser) {
+      if (existingUser !== null) {
         setErrors({ email: 'Un utente con questa email esiste già' })
         setLoading(false)
         return

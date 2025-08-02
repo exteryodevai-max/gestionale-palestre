@@ -98,9 +98,9 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
           .select('id')
           .eq('email', formData.email.trim())
           .neq('id', staff.id)
-          .single()
+          .maybeSingle()
 
-        if (existingUser) {
+        if (existingUser !== null) {
           setErrors({ email: 'Un utente con questa email esiste già' })
           setLoading(false)
           return
