@@ -40,6 +40,8 @@ export function useAuth() {
             setUser(null)
           } else {
             setUser(userData as User)
+            console.log('Authenticated user ID:', session.user.id);
+
           }
         } else {
           setUser(null)
