@@ -1,9 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// Esporta le variabili di configurazione per poterle controllare altrove
+export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-supabase-project-url.supabase.co'
+export const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-supabase-anon-key'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Crea il client Supabase
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+})
+
+// Aggiungi le proprietà al client per poterle controllare facilmente
+supabase.supabaseUrl = supabaseUrl
+supabase.supabaseKey = supabaseKey
 
 export type UserRole = 'super_admin' | 'admin' | 'trainer' | 'staff'
 export type MemberStatus = 'attivo' | 'scaduto' | 'sospeso'
@@ -24,6 +36,13 @@ export interface User {
   avatar_url?: string
   ultimo_accesso?: string
   creato_il: string
+  data_nascita?: string
+  indirizzo?: string
+  citta?: string
+  provincia?: string
+  cap?: string
+  codice_fiscale?: string
+  note?: string
 }
 
 export interface Member {

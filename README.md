@@ -99,6 +99,56 @@ Un sistema completo e moderno per la gestione di palestre e centri fitness, svil
 - npm o yarn
 - Account Supabase
 
+### Configurazione
+
+1. Clona il repository
+
+```bash
+git clone https://github.com/tuousername/gestionale-palestre.git
+cd gestionale-palestre
+```
+
+2. Installa le dipendenze
+
+```bash
+npm install
+```
+
+3. Configura le variabili d'ambiente
+
+Crea un file `.env` nella root del progetto basandoti sul file `.env.example`:
+
+```
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_APP_ENV=development
+VITE_APP_NAME=GymManager
+VITE_APP_VERSION=1.2.0
+```
+
+4. Avvia il server di sviluppo
+
+```bash
+npm run dev
+```
+
+5. Accedi all'applicazione
+
+Apri il browser e vai a `http://localhost:5173`
+
+### Configurazione di Supabase
+
+1. Crea un nuovo progetto su [Supabase](https://supabase.com/)
+2. Esegui le migrazioni SQL presenti nella cartella `supabase/migrations`
+3. Copia l'URL del progetto e la chiave anonima nelle variabili d'ambiente
+
+### Autenticazione
+
+Per creare un utente di test, puoi utilizzare il pulsante "Crea Utente Test" nella pagina di login. Questo creerà un utente con le seguenti credenziali:
+
+- Email: patrick.cioni@admin.com
+- Password: admin123
+
 ### 1. Clone del Repository
 ```bash
 git clone https://github.com/tuousername/gymmanager.git

@@ -10,12 +10,61 @@ interface QuickActionProps {
 }
 
 function QuickAction({ title, description, icon: Icon, color, onClick }: QuickActionProps) {
+  // Mappa dei colori per le classi Tailwind
+  const colorClasses = {
+    blue: {
+      border: 'hover:border-blue-300',
+      bg: 'hover:bg-blue-50',
+      iconBg: 'bg-blue-100',
+      iconText: 'text-blue-600',
+      iconHover: 'group-hover:bg-blue-200'
+    },
+    green: {
+      border: 'hover:border-green-300',
+      bg: 'hover:bg-green-50',
+      iconBg: 'bg-green-100',
+      iconText: 'text-green-600',
+      iconHover: 'group-hover:bg-green-200'
+    },
+    purple: {
+      border: 'hover:border-purple-300',
+      bg: 'hover:bg-purple-50',
+      iconBg: 'bg-purple-100',
+      iconText: 'text-purple-600',
+      iconHover: 'group-hover:bg-purple-200'
+    },
+    orange: {
+      border: 'hover:border-orange-300',
+      bg: 'hover:bg-orange-50',
+      iconBg: 'bg-orange-100',
+      iconText: 'text-orange-600',
+      iconHover: 'group-hover:bg-orange-200'
+    },
+    red: {
+      border: 'hover:border-red-300',
+      bg: 'hover:bg-red-50',
+      iconBg: 'bg-red-100',
+      iconText: 'text-red-600',
+      iconHover: 'group-hover:bg-red-200'
+    },
+    indigo: {
+      border: 'hover:border-indigo-300',
+      bg: 'hover:bg-indigo-50',
+      iconBg: 'bg-indigo-100',
+      iconText: 'text-indigo-600',
+      iconHover: 'group-hover:bg-indigo-200'
+    }
+  };
+  
+  // Ottieni le classi per il colore specificato o usa il blu come fallback
+  const classes = colorClasses[color as keyof typeof colorClasses] || colorClasses.blue;
+  
   return (
     <button
       onClick={onClick}
-      className={`p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-${color}-300 hover:bg-${color}-50 transition-all duration-200 text-left group`}
+      className={`p-4 rounded-xl border-2 border-dashed border-gray-200 ${classes.border} ${classes.bg} transition-all duration-200 text-left group`}
     >
-      <div className={`inline-flex p-2 rounded-lg bg-${color}-100 text-${color}-600 mb-3 group-hover:bg-${color}-200`}>
+      <div className={`inline-flex p-2 rounded-lg ${classes.iconBg} ${classes.iconText} mb-3 ${classes.iconHover}`}>
         <Icon className="w-5 h-5" />
       </div>
       <h4 className="font-semibold text-gray-900 mb-1">{title}</h4>

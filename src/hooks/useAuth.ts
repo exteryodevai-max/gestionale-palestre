@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase, User } from '../lib/supabase'
 
-// UTENTE FISSO PER BYPASSARE L'AUTENTICAZIONE
-const FIXED_USER: User = {
+// Utente di fallback per modalità demo quando Supabase non è configurato
+const DEMO_USER: User = {
   id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
   nome: 'Patrick',
   cognome: 'Cioni',
@@ -16,36 +16,195 @@ const FIXED_USER: User = {
   creato_il: new Date().toISOString()
 }
 
+// Verifica se Supabase è configurato correttamente
+const isSupabaseConfigured = 
+  supabase.supabaseUrl !== 'https://your-supabase-project-url.supabase.co' && 
+  supabase.supabaseKey !== 'your-supabase-anon-key'
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(false) // SEMPRE FALSE
+  const [loading, setLoading] = useState(true)
+  const [isDemo, setIsDemo] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
-    // IMPOSTA IMMEDIATAMENTE L'UTENTE FISSO
-    setUser(FIXED_USER)
-    setLoading(false)
+    // Se Supabase non è configurato, usa la modalità demo
+    if (!isSupabaseConfigured) {
+      console.warn('⚠️ Supabase non configurato. Utilizzo modalità demo con utente fittizio.')
+      setUser(DEMO_USER)
+      setIsDemo(true)
+      setLoading(false)
+      return
+    }
+    
+    // Controlla la sessione corrente
+    const checkSession = async () => {
+      try {
+        setLoading(true)
+        setAuthError(null)
+        
+        // Ottieni la sessione corrente
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (session) {
+          // Ottieni i dati dell'utente dal database
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', session.user.email)
+            .single()
+            
+          if (userError) {
+            console.error('Errore nel recupero dati utente:', userError)
+            setUser(null)
+            setAuthError(`Errore nel recupero dati utente: ${userError.message}`)
+            // Se l'utente è autenticato ma non esiste nel database, effettua il logout
+            if (userError.code === 'PGRST116') {
+              console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
+              await supabase.auth.signOut()
+              setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore.')
+            }
+          } else {
+            setUser(userData as User)
+          }
+        } else {
+          setUser(null)
+        }
+      } catch (error: any) {
+        console.error('Errore nel controllo della sessione:', error)
+        setUser(null)
+        setAuthError(`Errore di sistema: ${error.message}`)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    checkSession()
+    
+    // Ascolta i cambiamenti di autenticazione
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setLoading(true)
+      setAuthError(null)
+      
+      if (event === 'SIGNED_IN' && session) {
+        try {
+          // Ottieni i dati dell'utente dal database
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', session.user.email)
+            .single()
+            
+          if (userError) {
+            console.error('Errore nel recupero dati utente:', userError)
+            setUser(null)
+            setAuthError(`Errore nel recupero dati utente: ${userError.message}`)
+            // Se l'utente è autenticato ma non esiste nel database, effettua il logout
+            if (userError.code === 'PGRST116') {
+              console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
+              await supabase.auth.signOut()
+              setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore.')
+            }
+          } else {
+            setUser(userData as User)
+            
+            // Aggiorna l'ultimo accesso
+            await supabase
+              .from('users')
+              .update({ ultimo_accesso: new Date().toISOString() })
+              .eq('id', userData.id)
+          }
+        } catch (error: any) {
+          console.error('Errore durante il processo di login:', error)
+          setAuthError(`Errore di sistema: ${error.message}`)
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+      }
+      
+      setLoading(false)
+    })
+    
+    // Pulizia della sottoscrizione
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    // ACCETTA QUALSIASI CREDENZIALE
-    setUser(FIXED_USER)
-    return { success: true }
+    // In modalità demo, accetta qualsiasi credenziale
+    if (!isSupabaseConfigured) {
+      console.warn('⚠️ Login in modalità demo (Supabase non configurato)')
+      setUser(DEMO_USER)
+      setIsDemo(true)
+      return { success: true }
+    }
+    
+    try {
+      setLoading(true)
+      setAuthError(null)
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      
+      if (error) {
+        console.error('Errore di login:', error)
+        setAuthError(`Errore di login: ${error.message}`)
+        return { success: false, error: error.message }
+      }
+      
+      return { success: true }
+    } catch (error: any) {
+      console.error('Errore durante il login:', error)
+      setAuthError(`Errore di sistema: ${error.message}`)
+      return { success: false, error: error.message }
+    } finally {
+      setLoading(false)
+    }
   }
 
   const signOut = async () => {
-    // LOGOUT FITTIZIO
-    setUser(null)
+    // In modalità demo, simula il logout
+    if (!isSupabaseConfigured) {
+      console.warn('⚠️ Logout in modalità demo (Supabase non configurato)')
+      setUser(null)
+      setIsDemo(false)
+      return
+    }
+    
+    try {
+      setLoading(true)
+      setAuthError(null)
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        console.error('Errore durante il logout:', error)
+        setAuthError(`Errore durante il logout: ${error.message}`)
+      }
+      
+      setUser(null)
+    } catch (error: any) {
+      console.error('Errore durante il logout:', error)
+      setAuthError(`Errore di sistema: ${error.message}`)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const isAdmin = true
+  const isAdmin = user?.ruolo === 'admin' || user?.ruolo === 'super_admin'
   const isSuperAdmin = user?.ruolo === 'super_admin'
 
   return {
     user,
-    loading: false, // SEMPRE FALSE
+    loading,
     signIn,
     signOut,
     isAdmin,
-    isSuperAdmin
+    isSuperAdmin,
+    isDemo,
+    authError,
+    clearAuthError: () => setAuthError(null)
   }
 }
