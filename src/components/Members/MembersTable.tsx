@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Plus, Filter, MoreHorizontal, Edit2, Trash2, UserCheck } from 'lucide-react'
+import { Search, Plus, Filter, MoreHorizontal, Edit2, Trash2, UserCheck, X, AlertCircle } from 'lucide-react'
 import { supabase, Member } from '../../lib/supabase'
 import { NewMemberModal } from './NewMemberModal'
+import { EditMemberModal } from './EditMemberModal'
 
 export function MembersTable() {
   const [members, setMembers] = useState<Member[]>([])
@@ -9,6 +10,10 @@ export function MembersTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [showNewMemberModal, setShowNewMemberModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [memberToDelete, setMemberToDelete] = useState<Member | null>(null)
 
   useEffect(() => {
     fetchMembers()
@@ -32,6 +37,42 @@ export function MembersTable() {
 
   const handleMemberCreated = () => {
     fetchMembers() // Ricarica la lista dopo la creazione
+  }
+
+  const handleMemberUpdated = () => {
+    fetchMembers()
+    setSelectedMember(null)
+  }
+
+  const handleEditClick = (member: Member) => {
+    setSelectedMember(member)
+    setShowEditModal(true)
+  }
+
+  const handleDeleteClick = (member: Member) => {
+    setMemberToDelete(member)
+    setShowDeleteConfirm(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!memberToDelete) return
+
+    try {
+      const { error } = await supabase
+        .from('members')
+        .delete()
+        .eq('id', memberToDelete.id)
+
+      if (error) throw error
+
+      console.log('✅ Iscritto eliminato:', memberToDelete.nome, memberToDelete.cognome)
+      fetchMembers()
+      setShowDeleteConfirm(false)
+      setMemberToDelete(null)
+    } catch (error: any) {
+      console.error('❌ Errore eliminazione iscritto:', error)
+      // You could add error handling here with a toast or alert
+    }
   }
 
   const filteredMembers = members.filter(member => {
@@ -212,10 +253,18 @@ export function MembersTable() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900 p-1 rounded">
+                      <button 
+                        onClick={() => handleEditClick(member)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded transition-colors"
+                        title="Modifica iscritto"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900 p-1 rounded">
+                      <button 
+                        onClick={() => handleDeleteClick(member)}
+                        className="text-red-600 hover:text-red-900 p-1 rounded transition-colors"
+                        title="Elimina iscritto"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                       <button className="text-gray-600 hover:text-gray-900 p-1 rounded">
@@ -249,6 +298,76 @@ export function MembersTable() {
         onClose={() => setShowNewMemberModal(false)}
         onMemberCreated={handleMemberCreated}
       />
+
+      {/* Edit Member Modal */}
+      <EditMemberModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false)
+          setSelectedMember(null)
+        }}
+        onMemberUpdated={handleMemberUpdated}
+        member={selectedMember}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && memberToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Conferma Eliminazione</h3>
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false)
+                    setMemberToDelete(null)
+                  }}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              
+              <div className="mb-6">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="bg-red-100 p-2 rounded-lg">
+                    <AlertCircle className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Sei sicuro di voler eliminare l'iscritto:
+                    </p>
+                    <p className="font-semibold text-gray-900">
+                      {memberToDelete.nome} {memberToDelete.cognome}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                  ⚠️ Questa azione non può essere annullata. L'iscritto e tutti i suoi dati verranno eliminati definitivamente.
+                </p>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false)
+                    setMemberToDelete(null)
+                  }}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
