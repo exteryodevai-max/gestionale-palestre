@@ -7,21 +7,31 @@ export function useAuth() {
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('useAuth useEffect: Inizio esecuzione.')
+    console.log('🔍 useAuth: Inizio controllo sessione')
     
-    // Controlla la sessione corrente
     const checkSession = async () => {
-      console.log('checkSession: Inizio. loading:', loading)
       try {
         setLoading(true)
         setAuthError(null)
         
-        // Ottieni la sessione corrente
-        const { data: { session } } = await supabase.auth.getSession()
-        console.log('checkSession: Sessione ottenuta. sessione:', session ? 'presente' : 'assente')
+        console.log('🔍 Controllo sessione Supabase...')
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
-        if (session) {
-          // Ottieni i dati dell'utente dal database
+        if (sessionError) {
+          console.error('❌ Errore nel recupero sessione:', sessionError)
+          setAuthError(`Errore sessione: ${sessionError.message}`)
+          setUser(null)
+          setLoading(false)
+          return
+        }
+        
+        console.log('📋 Sessione:', session ? 'presente' : 'assente')
+        
+        if (session?.user) {
+          console.log('👤 Utente autenticato:', session.user.email)
+          
+          // Prova a recuperare i dati dell'utente dalla tabella users
+          console.log('🔍 Recupero dati utente dalla tabella users...')
           const { data: userData, error: userError } = await supabase
             .from('users')
             .select('*')
@@ -29,31 +39,29 @@ export function useAuth() {
             .maybeSingle()
             
           if (userError) {
-            console.error('Errore nel recupero dati utente:', userError)
+            console.error('❌ Errore nel recupero dati utente:', userError)
+            setAuthError(`Errore database: ${userError.message}. Verifica che la tabella 'users' esista e sia configurata correttamente.`)
             setUser(null)
-            setAuthError(`Errore nel recupero dati utente: ${userError.message}`)
-            await supabase.auth.signOut()
           } else if (!userData) {
-            // L'utente è autenticato ma non esiste nel database
-            console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
+            console.warn('⚠️ Utente autenticato ma non trovato nella tabella users')
+            setAuthError('Il tuo account non è stato trovato nel database. Contatta l\'amministratore.')
             setUser(null)
-            setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore per completare la configurazione del profilo.')
-            await supabase.auth.signOut()
+            // Non fare logout automatico per ora, per debug
           } else {
+            console.log('✅ Dati utente recuperati:', userData.email, userData.ruolo)
             setUser(userData as User)
-            console.log('checkSession: Utente impostato:', userData.email)
           }
         } else {
+          console.log('👤 Nessun utente autenticato')
           setUser(null)
-          console.log('checkSession: Nessuna sessione, utente impostato a null.')
         }
       } catch (error: any) {
-        console.error('Errore nel controllo della sessione:', error)
-        setUser(null)
+        console.error('💥 Errore generale nel controllo sessione:', error)
         setAuthError(`Errore di sistema: ${error.message}`)
+        setUser(null)
       } finally {
         setLoading(false)
-        console.log('checkSession: Fine. loading impostato a false.')
+        console.log('✅ Controllo sessione completato')
       }
     }
     
@@ -61,53 +69,19 @@ export function useAuth() {
     
     // Ascolta i cambiamenti di autenticazione
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('onAuthStateChange: Evento:', event, 'loading:', loading)
-      setLoading(true)
-      setAuthError(null)
+      console.log('🔄 Auth state change:', event)
       
       if (event === 'SIGNED_IN' && session) {
-        try {
-          // Ottieni i dati dell'utente dal database
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', session.user.email)
-            .maybeSingle()
-            
-          if (userError) {
-            console.error('Errore nel recupero dati utente:', userError)
-            setUser(null)
-            setAuthError(`Errore nel recupero dati utente: ${userError.message}`)
-            await supabase.auth.signOut()
-          } else if (!userData) {
-            // L'utente è autenticato ma non esiste nel database
-            console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
-            setUser(null)
-            setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore per completare la configurazione del profilo.')
-            await supabase.auth.signOut()
-          } else {
-            setUser(userData as User)
-            
-            // Aggiorna l'ultimo accesso
-            await supabase
-              .from('users')
-              .update({ ultimo_accesso: new Date().toISOString() })
-              .eq('id', userData.id)
-          }
-        } catch (error: any) {
-          console.error('Errore durante il processo di login:', error)
-          setAuthError(`Errore di sistema: ${error.message}`)
-        }
+        console.log('✅ Utente loggato:', session.user.email)
+        // Ricarica i dati utente
+        checkSession()
       } else if (event === 'SIGNED_OUT') {
+        console.log('👋 Utente disconnesso')
         setUser(null)
-        console.log('onAuthStateChange: Utente disconnesso.')
+        setAuthError(null)
       }
-      
-      setLoading(false)
-      console.log('onAuthStateChange: Fine. loading impostato a false.')
     })
     
-    // Pulizia della sottoscrizione
     return () => {
       subscription.unsubscribe()
     }
@@ -118,20 +92,31 @@ export function useAuth() {
       setLoading(true)
       setAuthError(null)
       
+      console.log('🔐 Tentativo di login per:', email)
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       })
       
       if (error) {
-        console.error('Errore di login:', error)
-        setAuthError(`Errore di login: ${error.message}`)
-        return { success: false, error: error.message }
+        console.error('❌ Errore di login:', error)
+        let errorMessage = error.message
+        
+        if (errorMessage.includes('Invalid login credentials')) {
+          errorMessage = 'Credenziali non valide. Verifica email e password.'
+        } else if (errorMessage.includes('Email not confirmed')) {
+          errorMessage = 'Email non confermata. Controlla la tua casella di posta.'
+        }
+        
+        setAuthError(errorMessage)
+        return { success: false, error: errorMessage }
       }
       
+      console.log('✅ Login riuscito per:', email)
       return { success: true }
     } catch (error: any) {
-      console.error('Errore durante il login:', error)
+      console.error('💥 Errore durante il login:', error)
       setAuthError(`Errore di sistema: ${error.message}`)
       return { success: false, error: error.message }
     } finally {
@@ -143,16 +128,20 @@ export function useAuth() {
     try {
       setLoading(true)
       setAuthError(null)
+      
+      console.log('👋 Logout in corso...')
       const { error } = await supabase.auth.signOut()
       
       if (error) {
-        console.error('Errore durante il logout:', error)
+        console.error('❌ Errore durante il logout:', error)
         setAuthError(`Errore durante il logout: ${error.message}`)
+      } else {
+        console.log('✅ Logout completato')
       }
       
       setUser(null)
     } catch (error: any) {
-      console.error('Errore durante il logout:', error)
+      console.error('💥 Errore durante il logout:', error)
       setAuthError(`Errore di sistema: ${error.message}`)
     } finally {
       setLoading(false)
