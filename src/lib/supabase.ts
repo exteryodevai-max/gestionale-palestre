@@ -1,8 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Esporta le variabili di configurazione per poterle controllare altrove
-export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-supabase-project-url.supabase.co'
-export const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-supabase-anon-key'
+// Verifica che le variabili d'ambiente siano configurate
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    'Variabili d\'ambiente Supabase mancanti. Assicurati di aver configurato VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY nel file .env'
+  )
+}
 
 // Crea il client Supabase
 export const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -12,10 +18,6 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     detectSessionInUrl: true
   }
 })
-
-// Aggiungi le proprietà al client per poterle controllare facilmente
-supabase.supabaseUrl = supabaseUrl
-supabase.supabaseKey = supabaseKey
 
 export type UserRole = 'super_admin' | 'admin' | 'trainer' | 'staff'
 export type MemberStatus = 'attivo' | 'scaduto' | 'sospeso'

@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
-import { Dumbbell, Eye, EyeOff, AlertTriangle } from 'lucide-react'
+import { Dumbbell, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
-import { createTestUser } from '../../utils/createTestUser'
-import { supabase } from '../../lib/supabase'
 import { ErrorDisplay } from '../Common/ErrorDisplay'
 
 export function LoginForm() {
@@ -10,25 +8,7 @@ export function LoginForm() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
-  const { signIn, loading, isDemo } = useAuth()
-  
-  // Verifica se Supabase è configurato correttamente
-  const isSupabaseConfigured = 
-    supabase.supabaseUrl !== 'https://your-supabase-project-url.supabase.co' && 
-    supabase.supabaseKey !== 'your-supabase-anon-key'
-
-  const handleCreateTestUser = async () => {
-    setError('')
-    console.log('🔄 Creating test user...')
-    
-    const result = await createTestUser()
-    if (result.success) {
-      setError('')
-      alert('✅ Utente test creato con successo! Ora puoi fare login con patrick.cioni@admin.com / admin123')
-    } else {
-      setError(`Errore nella creazione utente: ${result.error}`)
-    }
-  }
+  const { signIn, loading } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -151,47 +131,6 @@ export function LoginForm() {
               </button>
             </div>
           </form>
-
-          {/* Demo Mode Warning */}
-          {!isSupabaseConfigured && (
-            <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-              <div className="flex items-start">
-                <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm text-amber-800 font-medium mb-1">Modalità Demo Attiva</p>
-                  <p className="text-xs text-amber-700">
-                    L'applicazione è in modalità demo perché Supabase non è configurato.<br/>
-                    Qualsiasi email e password verranno accettate per il login.<br/>
-                    Per utilizzare l'app con un database reale, configura le variabili d'ambiente Supabase nel file .env
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Demo Credentials or Test User */}
-          {isSupabaseConfigured ? (
-            <>
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800 font-medium mb-2">ℹ️ Credenziali Demo</p>
-                <p className="text-xs text-blue-700">
-                  Puoi creare un utente test cliccando sul pulsante "Crea Utente Test" sotto.<br/>
-                  Oppure accedi con le tue credenziali se hai già un account.
-                </p>
-              </div>
-              
-              {/* Create Test User Button */}
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={handleCreateTestUser}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                >
-                  Crea Utente Test
-                </button>
-              </div>
-            </>
-          ) : null}
         </div>
 
         {/* Footer */}

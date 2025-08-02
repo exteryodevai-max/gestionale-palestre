@@ -1,45 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase, User } from '../lib/supabase'
 
-// Utente di fallback per modalità demo quando Supabase non è configurato
-const DEMO_USER: User = {
-  id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-  nome: 'Patrick',
-  cognome: 'Cioni',
-  email: 'patrick.cioni@admin.com',
-  telefono: '+39 123 456 7890',
-  ruolo: 'admin',
-  attivo: true,
-  gym_id: 'b1ffcc99-8d1c-5fg9-cc7e-7cc0ce491b22',
-  avatar_url: null,
-  ultimo_accesso: new Date().toISOString(),
-  creato_il: new Date().toISOString()
-}
-
-// Verifica se Supabase è configurato correttamente
-const isSupabaseConfigured = 
-  supabase.supabaseUrl !== 'https://your-supabase-project-url.supabase.co' && 
-  supabase.supabaseKey !== 'your-supabase-anon-key'
-
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isDemo, setIsDemo] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
     console.log('useAuth useEffect: Inizio esecuzione.')
-    console.log('useAuth useEffect: isSupabaseConfigured:', isSupabaseConfigured)
-    
-    // Se Supabase non è configurato, usa la modalità demo
-    if (!isSupabaseConfigured) {
-      console.warn('⚠️ Supabase non configurato. Utilizzo modalità demo con utente fittizio.')
-      setUser(DEMO_USER)
-      setIsDemo(true)
-      setLoading(false)
-      console.log('useAuth useEffect: Modalità demo attivata. loading impostato a false.')
-      return // Exit early - no auth listener needed in demo mode
-    }
     
     // Controlla la sessione corrente
     const checkSession = async () => {
@@ -91,7 +59,7 @@ export function useAuth() {
     
     checkSession()
     
-    // Ascolta i cambiamenti di autenticazione (solo se Supabase è configurato)
+    // Ascolta i cambiamenti di autenticazione
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('onAuthStateChange: Evento:', event, 'loading:', loading)
       setLoading(true)
@@ -143,17 +111,9 @@ export function useAuth() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [isSupabaseConfigured]) // Add dependency to re-run if Supabase config changes
+  }, [])
 
   const signIn = async (email: string, password: string) => {
-    // In modalità demo, accetta qualsiasi credenziale
-    if (!isSupabaseConfigured) {
-      console.warn('⚠️ Login in modalità demo (Supabase non configurato)')
-      setUser(DEMO_USER)
-      setIsDemo(true)
-      return { success: true }
-    }
-    
     try {
       setLoading(true)
       setAuthError(null)
@@ -180,14 +140,6 @@ export function useAuth() {
   }
 
   const signOut = async () => {
-    // In modalità demo, simula il logout
-    if (!isSupabaseConfigured) {
-      console.warn('⚠️ Logout in modalità demo (Supabase non configurato)')
-      setUser(null)
-      setIsDemo(false)
-      return
-    }
-    
     try {
       setLoading(true)
       setAuthError(null)
@@ -217,7 +169,6 @@ export function useAuth() {
     signOut,
     isAdmin,
     isSuperAdmin,
-    isDemo,
     authError,
     clearAuthError: () => setAuthError(null)
   }

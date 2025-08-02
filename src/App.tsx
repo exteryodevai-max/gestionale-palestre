@@ -8,7 +8,7 @@ import { SubscriptionsTable } from './components/Subscriptions/SubscriptionsTabl
 import { AlertTriangle } from 'lucide-react'
 
 function App() {
-  const { user, loading, isDemo } = useAuth()
+  const { user, loading } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
@@ -57,17 +57,6 @@ function App() {
 
   return (
     <div className="flex h-screen bg-gray-100 flex-col">
-      {isDemo && (
-        <div className="bg-amber-50 border-b border-amber-200 py-2 px-4">
-          <div className="container mx-auto flex items-center">
-            <AlertTriangle className="h-5 w-5 text-amber-500 mr-2" />
-            <p className="text-sm text-amber-800">
-              <span className="font-medium">Modalità Demo:</span> L'applicazione è in esecuzione con dati fittizi. Per utilizzare un database reale, configura le variabili Supabase nel file .env
-            </p>
-          </div>
-        </div>
-      )}
-      
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           activeTab={activeTab}
