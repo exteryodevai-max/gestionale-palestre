@@ -1,4 +1,3 @@
-```typescript
 import React, { useState, useEffect } from 'react'
 import { X, MapPin, Users, Image, Save, AlertCircle } from 'lucide-react'
 import { supabase, Area } from '../../lib/supabase'
@@ -273,4 +272,3 @@ export function EditAreaModal({ isOpen, onClose, onAreaUpdated, area }: EditArea
     </div>
   )
 }
-```

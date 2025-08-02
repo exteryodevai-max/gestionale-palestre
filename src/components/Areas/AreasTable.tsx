@@ -1,4 +1,3 @@
-```typescript
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Filter, Edit2, Trash2, MapPin, X, AlertCircle, Users, Image } from 'lucide-react'
 import { supabase, Area } from '../../lib/supabase'
@@ -385,4 +384,4 @@ export function AreasTable() {
       )}
     </div>
   )
-}```
+}

@@ -1,4 +1,3 @@
-```typescript
 import React, { useState } from 'react'
 import { X, MapPin, Users, Image, Save, AlertCircle } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
@@ -268,4 +267,3 @@ export function NewAreaModal({ isOpen, onClose, onAreaCreated }: NewAreaModalPro
     </div>
   )
 }
-```
