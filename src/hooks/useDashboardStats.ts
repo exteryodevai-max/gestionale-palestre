@@ -62,7 +62,7 @@ export function useDashboardStats() {
       const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
       const { data: monthlySubscriptions } = await supabase
         .from('subscriptions')
-        .select('product:subscription_products(price)')
+        .select('product:subscription_products!inner(price)')
         .eq('attivo', true)
         .gte('creato_il', startOfMonth)
 
