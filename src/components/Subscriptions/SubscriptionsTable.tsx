@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Package, TrendingUp, AlertCircle, Plus } from 'lucide-react'
+import { Search, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Package, TrendingUp, AlertCircle, Plus, X } from 'lucide-react'
 import { supabase, SubscriptionProduct, DurationUnitType } from '../../lib/supabase'
 import { NewSubscriptionProductModal } from './NewSubscriptionProductModal'
+import { EditSubscriptionProductModal } from './EditSubscriptionProductModal'
 
 export function SubscriptionsTable() {
   const [subscriptionProducts, setSubscriptionProducts] = useState<SubscriptionProduct[]>([])
@@ -10,6 +11,10 @@ export function SubscriptionsTable() {
   const [durationFilter, setDurationFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [showNewSubscriptionProductModal, setShowNewSubscriptionProductModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<SubscriptionProduct | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<SubscriptionProduct | null>(null)
 
   useEffect(() => {
     fetchSubscriptionProducts()
@@ -35,6 +40,42 @@ export function SubscriptionsTable() {
 
   const handleProductCreated = () => {
     fetchSubscriptionProducts()
+  }
+
+  const handleProductUpdated = () => {
+    fetchSubscriptionProducts()
+    setSelectedProduct(null)
+  }
+
+  const handleEditClick = (product: SubscriptionProduct) => {
+    setSelectedProduct(product)
+    setShowEditModal(true)
+  }
+
+  const handleDeleteClick = (product: SubscriptionProduct) => {
+    setProductToDelete(product)
+    setShowDeleteConfirm(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!productToDelete) return
+
+    try {
+      const { error } = await supabase
+        .from('subscription_products')
+        .delete()
+        .eq('id', productToDelete.id)
+
+      if (error) throw error
+
+      console.log('✅ Prodotto abbonamento eliminato:', productToDelete.name)
+      fetchSubscriptionProducts()
+      setShowDeleteConfirm(false)
+      setProductToDelete(null)
+    } catch (error: any) {
+      console.error('❌ Errore eliminazione prodotto abbonamento:', error)
+      // You could add error handling here with a toast or alert
+    }
   }
 
   const filteredProducts = subscriptionProducts.filter(product => {
@@ -305,10 +346,18 @@ export function SubscriptionsTable() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900 p-1 rounded">
+                      <button 
+                        onClick={() => handleEditClick(product)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded transition-colors"
+                        title="Modifica abbonamento"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900 p-1 rounded">
+                      <button 
+                        onClick={() => handleDeleteClick(product)}
+                        className="text-red-600 hover:text-red-900 p-1 rounded transition-colors"
+                        title="Elimina abbonamento"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                       <button className="text-gray-600 hover:text-gray-900 p-1 rounded">
@@ -342,6 +391,76 @@ export function SubscriptionsTable() {
         onClose={() => setShowNewSubscriptionProductModal(false)}
         onProductCreated={handleProductCreated}
       />
+
+      {/* Edit Subscription Product Modal */}
+      <EditSubscriptionProductModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false)
+          setSelectedProduct(null)
+        }}
+        onProductUpdated={handleProductUpdated}
+        product={selectedProduct}
+      />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && productToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Conferma Eliminazione</h3>
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false)
+                    setProductToDelete(null)
+                  }}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              
+              <div className="mb-6">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="bg-red-100 p-2 rounded-lg">
+                    <AlertCircle className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">
+                      Sei sicuro di voler eliminare l'abbonamento:
+                    </p>
+                    <p className="font-semibold text-gray-900">
+                      {productToDelete.name}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                  ⚠️ Questa azione non può essere annullata. L'abbonamento verrà eliminato definitivamente.
+                </p>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false)
+                    setProductToDelete(null)
+                  }}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
