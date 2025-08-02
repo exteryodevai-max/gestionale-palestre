@@ -22,7 +22,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 export type UserRole = 'super_admin' | 'admin' | 'trainer' | 'staff'
 export type MemberStatus = 'attivo' | 'scaduto' | 'sospeso'
 export type DurationUnitType = 'days' | 'weeks' | 'months' | 'years' | 'credits'
-export type BookingStatus = 'prenotato' | 'presente' | 'no_show' | 'disdetto'
+export type BookingStatus = 'prenotato' | 'presente' | 'no_show' | 'disdetto' // Keep this line
 export type EquipmentStatus = 'attiva' | 'guasta' | 'fuori_uso' | 'manutenzione'
 export type NotificationType = 'info' | 'warning' | 'success' | 'error'
 
@@ -63,14 +63,14 @@ export interface Member {
   creato_il: string
 }
 
-export interface SubscriptionProduct {
+export interface SubscriptionProduct { // New interface for subscription products
   id: string
   name: string
   description?: string
   price: number
   duration_value: number
   duration_unit: DurationUnitType
-  credits_included?: number
+  credits_included?: number // Number of credits included, if duration_unit is 'credits'
   is_active: boolean
   gym_id?: string
   created_at: string
@@ -80,10 +80,10 @@ export interface SubscriptionProduct {
 export interface Subscription {
   id: string
   member_id: string
-  product_id: string
+  product_id: string // Reference to SubscriptionProduct
   data_inizio: string
   data_fine?: string
-  crediti_usati: number
+  crediti_usati: number // This field remains to track usage
   rinnovo_automatico: boolean
   attivo: boolean
   creato_da?: string

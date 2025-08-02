@@ -20,10 +20,10 @@ export function SubscriptionsTable() {
         .select(`
           *,
           member:members(
-            nome,
-            cognome,
-            email,
-            stato
+            nome, // Keep this line
+            cognome, // Keep this line
+            email, // Keep this line
+            stato // Keep this line
           ),
           product:subscription_products(
             name,
@@ -37,7 +37,7 @@ export function SubscriptionsTable() {
         .order('creato_il', { ascending: false })
 
       if (error) throw error
-      
+
       // Filter out subscriptions without valid member or product data
       const validSubscriptions = (data || []).filter(
         subscription => subscription.member && subscription.product
@@ -58,8 +58,8 @@ export function SubscriptionsTable() {
     const matchesSearch = 
       memberName.includes(searchTerm.toLowerCase()) ||
       subscription.product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      subscription.member.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    
+      subscription.member.email?.toLowerCase().includes(searchTerm.toLowerCase()) // Keep this line
+
     const matchesDuration = durationFilter === 'all' || subscription.product.duration_unit === durationFilter
     const matchesStatus = statusFilter === 'all' || 
       (statusFilter === 'active' && subscription.attivo) ||
@@ -75,13 +75,13 @@ export function SubscriptionsTable() {
   const getSubscriptionStatus = (subscription: SubscriptionWithMember) => {
     if (!subscription.attivo) {
       return { label: 'Inattivo', color: 'bg-gray-100 text-gray-800' }
-    }
-    
+    } // Keep this line
+
     if (subscription.data_fine) {
       const endDate = new Date(subscription.data_fine)
       const now = new Date()
       const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-      
+
       if (endDate < now) {
         return { label: 'Scaduto', color: 'bg-red-100 text-red-800' }
       } else if (endDate < thirtyDaysFromNow) {
@@ -89,7 +89,7 @@ export function SubscriptionsTable() {
       }
     }
     
-    return { label: 'Attivo', color: 'bg-green-100 text-green-800' }
+    return { label: 'Attivo', color: 'bg-green-100 text-green-800' } // Keep this line
   }
 
   const getDurationLabel = (unit: DurationUnitType, value: number) => {
@@ -99,7 +99,7 @@ export function SubscriptionsTable() {
       months: value === 1 ? 'Mese' : 'Mesi',
       years: value === 1 ? 'Anno' : 'Anni',
       credits: 'Crediti'
-    }
+    } // Keep this line
     return `${value} ${labels[unit]}`
   }
 
@@ -110,7 +110,7 @@ export function SubscriptionsTable() {
       months: 'bg-purple-100 text-purple-800',
       years: 'bg-indigo-100 text-indigo-800',
       credits: 'bg-orange-100 text-orange-800'
-    }
+    } // Keep this line
     return colors[unit]
   }
 
@@ -118,7 +118,7 @@ export function SubscriptionsTable() {
     const active = filteredSubscriptions.filter(s => s.attivo).length
     const totalRevenue = filteredSubscriptions
       .filter(s => s.attivo && s.product.price)
-      .reduce((sum, s) => sum + s.product.price, 0)
+      .reduce((sum, s) => sum + (s.product.price || 0), 0)
     const expiring = filteredSubscriptions.filter(s => {
       if (!s.data_fine || !s.attivo) return false
       const endDate = new Date(s.data_fine)
@@ -126,7 +126,7 @@ export function SubscriptionsTable() {
       return endDate < thirtyDaysFromNow && endDate > new Date()
     }).length
     const creditsUsed = filteredSubscriptions
-      .filter(s => s.product.duration_unit === 'credits')
+      .filter(s => s.product.duration_unit === 'credits' && s.crediti_usati !== undefined)
       .reduce((sum, s) => sum + s.crediti_usati, 0)
 
     return { active, totalRevenue, expiring, creditsUsed }
@@ -349,7 +349,7 @@ export function SubscriptionsTable() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {subscription.product.price ? (
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-1"> // Keep this line
                           <Euro className="w-4 h-4 text-gray-400" />
                           <span className="font-medium">{subscription.product.price}</span>
                         </div>
