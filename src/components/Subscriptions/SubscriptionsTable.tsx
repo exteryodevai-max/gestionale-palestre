@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Users, TrendingUp, AlertCircle, Package } from 'lucide-react'
-import { supabase, SubscriptionWithMember, DurationUnitType } from '../../lib/supabase'
+import { Search, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Package, TrendingUp, AlertCircle, Plus } from 'lucide-react'
+import { supabase, SubscriptionProduct, DurationUnitType } from '../../lib/supabase'
 import { NewSubscriptionProductModal } from './NewSubscriptionProductModal'
 
 export function SubscriptionsTable() {
-  const [subscriptions, setSubscriptions] = useState<SubscriptionWithMember[]>([])
+  const [subscriptionProducts, setSubscriptionProducts] = useState<SubscriptionProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [durationFilter, setDurationFilter] = useState<string>('all')
@@ -12,92 +12,54 @@ export function SubscriptionsTable() {
   const [showNewSubscriptionProductModal, setShowNewSubscriptionProductModal] = useState(false)
 
   useEffect(() => {
-    fetchSubscriptions()
+    fetchSubscriptionProducts()
   }, [])
 
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptionProducts = async () => {
     try {
       const { data, error } = await supabase
-        .from('subscriptions')
-        .select(`
-          *,
-          member:members(
-            nome,
-            cognome,
-            email,
-            stato
-          ),
-          product:subscription_products(
-            name,
-            description,
-            price,
-            duration_value,
-            duration_unit,
-            credits_included
-          )
-        `)
-        .order('creato_il', { ascending: false })
+        .from('subscription_products')
+        .select('*')
+        .order('created_at', { ascending: false })
 
       if (error) throw error
 
-      // Filter out subscriptions without valid member or product data
-      const validSubscriptions = (data || []).filter(
-        subscription => subscription.member && subscription.product
-      )
-      
-      setSubscriptions(validSubscriptions)
+      setSubscriptionProducts(data || [])
     } catch (error) {
-      console.error('Error fetching subscriptions:', error)
-      // Set empty array on error to prevent UI crashes
-      setSubscriptions([])
+      console.error('Error fetching subscription products:', error)
+      setSubscriptionProducts([])
     } finally {
       setLoading(false)
     }
   }
 
-
   const handleProductCreated = () => {
-    // Potresti voler ricaricare anche i prodotti se necessario
-    console.log('Nuovo prodotto abbonamento creato')
+    fetchSubscriptionProducts()
   }
 
-  const filteredSubscriptions = subscriptions.filter(subscription => {
-    const memberName = `${subscription.member.nome} ${subscription.member.cognome}`.toLowerCase()
+  const filteredProducts = subscriptionProducts.filter(product => {
     const matchesSearch = 
-      memberName.includes(searchTerm.toLowerCase()) ||
-      subscription.product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      subscription.member.email?.toLowerCase().includes(searchTerm.toLowerCase()) // Keep this line
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesDuration = durationFilter === 'all' || subscription.product.duration_unit === durationFilter
+    const matchesDuration = durationFilter === 'all' || product.duration_unit === durationFilter
     const matchesStatus = statusFilter === 'all' || 
-      (statusFilter === 'active' && subscription.attivo) ||
-      (statusFilter === 'inactive' && !subscription.attivo) ||
-      (statusFilter === 'expired' && subscription.data_fine && new Date(subscription.data_fine) < new Date()) ||
-      (statusFilter === 'expiring' && subscription.data_fine && 
-        new Date(subscription.data_fine) > new Date() && 
-        new Date(subscription.data_fine) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
+      (statusFilter === 'active' && product.is_active) ||
+      (statusFilter === 'inactive' && !product.is_active)
 
     return matchesSearch && matchesDuration && matchesStatus
   })
 
-  const getSubscriptionStatus = (subscription: SubscriptionWithMember) => {
-    if (!subscription.attivo) {
-      return { label: 'Inattivo', color: 'bg-gray-100 text-gray-800' }
-    } // Keep this line
-
-    if (subscription.data_fine) {
-      const endDate = new Date(subscription.data_fine)
-      const now = new Date()
-      const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-
-      if (endDate < now) {
-        return { label: 'Scaduto', color: 'bg-red-100 text-red-800' }
-      } else if (endDate < thirtyDaysFromNow) {
-        return { label: 'In scadenza', color: 'bg-yellow-100 text-yellow-800' }
-      }
-    }
-    
-    return { label: 'Attivo', color: 'bg-green-100 text-green-800' } // Keep this line
+  const getStatusBadge = (isActive: boolean) => {
+    return isActive ? (
+      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+        Attivo
+      </span>
+    ) : (
+      <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+        Inattivo
+      </span>
+    )
   }
 
   const getDurationLabel = (unit: DurationUnitType, value: number) => {
@@ -107,7 +69,7 @@ export function SubscriptionsTable() {
       months: value === 1 ? 'Mese' : 'Mesi',
       years: value === 1 ? 'Anno' : 'Anni',
       credits: 'Crediti'
-    } // Keep this line
+    }
     return `${value} ${labels[unit]}`
   }
 
@@ -118,26 +80,19 @@ export function SubscriptionsTable() {
       months: 'bg-purple-100 text-purple-800',
       years: 'bg-indigo-100 text-indigo-800',
       credits: 'bg-orange-100 text-orange-800'
-    } // Keep this line
+    }
     return colors[unit]
   }
 
   const calculateStats = () => {
-    const active = filteredSubscriptions.filter(s => s.attivo).length
-    const totalRevenue = filteredSubscriptions
-      .filter(s => s.attivo && s.product.price)
-      .reduce((sum, s) => sum + (s.product.price || 0), 0)
-    const expiring = filteredSubscriptions.filter(s => {
-      if (!s.data_fine || !s.attivo) return false
-      const endDate = new Date(s.data_fine)
-      const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-      return endDate < thirtyDaysFromNow && endDate > new Date()
-    }).length
-    const creditsUsed = filteredSubscriptions
-      .filter(s => s.product.duration_unit === 'credits' && s.crediti_usati !== undefined)
-      .reduce((sum, s) => sum + s.crediti_usati, 0)
+    const activeProducts = filteredProducts.filter(p => p.is_active).length
+    const totalProducts = filteredProducts.length
+    const averagePrice = filteredProducts.length > 0 
+      ? filteredProducts.reduce((sum, p) => sum + p.price, 0) / filteredProducts.length 
+      : 0
+    const creditProducts = filteredProducts.filter(p => p.duration_unit === 'credits').length
 
-    return { active, totalRevenue, expiring, creditsUsed }
+    return { activeProducts, totalProducts, averagePrice, creditProducts }
   }
 
   const stats = calculateStats()
@@ -160,15 +115,15 @@ export function SubscriptionsTable() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gestione Abbonamenti</h1>
           <p className="text-gray-600 mt-1">
-            {filteredSubscriptions.length} abbonamenti trovati
+            {filteredProducts.length} abbonamenti trovati
           </p>
         </div>
         <button 
           onClick={() => setShowNewSubscriptionProductModal(true)}
           className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
         >
-          <Package className="w-4 h-4" />
-          <span>Nuovo Prodotto</span>
+          <Plus className="w-4 h-4" />
+          <span>Nuovo Abbonamento</span>
         </button>
       </div>
 
@@ -178,10 +133,10 @@ export function SubscriptionsTable() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Abbonamenti Attivi</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.active}</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.activeProducts}</p>
             </div>
             <div className="bg-green-50 p-3 rounded-lg">
-              <Users className="w-6 h-6 text-green-600" />
+              <Package className="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>
@@ -189,8 +144,8 @@ export function SubscriptionsTable() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Ricavi Mensili</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">€{stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600">Prezzo Medio</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">€{stats.averagePrice.toFixed(0)}</p>
             </div>
             <div className="bg-blue-50 p-3 rounded-lg">
               <Euro className="w-6 h-6 text-blue-600" />
@@ -201,11 +156,11 @@ export function SubscriptionsTable() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">In Scadenza</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.expiring}</p>
+              <p className="text-sm font-medium text-gray-600">Totale Abbonamenti</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalProducts}</p>
             </div>
-            <div className="bg-yellow-50 p-3 rounded-lg">
-              <AlertCircle className="w-6 h-6 text-yellow-600" />
+            <div className="bg-purple-50 p-3 rounded-lg">
+              <TrendingUp className="w-6 h-6 text-purple-600" />
             </div>
           </div>
         </div>
@@ -213,8 +168,8 @@ export function SubscriptionsTable() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Crediti Utilizzati</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.creditsUsed}</p>
+              <p className="text-sm font-medium text-gray-600">Abbonamenti a Crediti</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.creditProducts}</p>
             </div>
             <div className="bg-orange-50 p-3 rounded-lg">
               <CreditCard className="w-6 h-6 text-orange-600" />
@@ -231,20 +186,20 @@ export function SubscriptionsTable() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Cerca per nome membro o abbonamento..."
+              placeholder="Cerca per nome o descrizione..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 
-          {/* Type Filter */}
+          {/* Duration Filter */}
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <select
               value={durationFilter}
               onChange={(e) => setDurationFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
             >
               <option value="all">Tutte le durate</option>
               <option value="days">Giorni</option>
@@ -260,12 +215,10 @@ export function SubscriptionsTable() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+              className="pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none"
             >
               <option value="all">Tutti gli stati</option>
               <option value="active">Attivi</option>
-              <option value="expiring">In scadenza</option>
-              <option value="expired">Scaduti</option>
               <option value="inactive">Inattivi</option>
             </select>
           </div>
@@ -279,22 +232,22 @@ export function SubscriptionsTable() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Membro
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Abbonamento
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Periodo
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Crediti
+                  Durata
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Prezzo
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Crediti
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Stato
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Creato
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Azioni
@@ -302,108 +255,76 @@ export function SubscriptionsTable() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredSubscriptions.map((subscription) => {
-                const status = getSubscriptionStatus(subscription)
-                const remainingCredits = (subscription.product.credits_included || 0) - subscription.crediti_usati
-                
-                return (
-                  <tr key={subscription.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-600">
-                              {subscription.member.nome.charAt(0)}{subscription.member.cognome.charAt(0)}
-                            </span>
-                          </div>
+              {filteredProducts.map((product) => (
+                <tr key={product.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                          <Package className="h-5 w-5 text-purple-600" />
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {subscription.member.nome} {subscription.member.cognome}
-                          </div>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {product.name}
+                        </div>
+                        {product.description && (
                           <div className="text-sm text-gray-500">
-                            {subscription.member.email}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {subscription.product.name}
-                      </div>
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getDurationColor(subscription.product.duration_unit)}`}>
-                        {getDurationLabel(subscription.product.duration_unit, subscription.product.duration_value)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span>{new Date(subscription.data_inizio).toLocaleDateString('it-IT')}</span>
-                      </div>
-                      {subscription.data_fine && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          fino al {new Date(subscription.data_fine).toLocaleDateString('it-IT')}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {subscription.product.duration_unit === 'credits' ? (
-                        <div>
-                          <div className="font-medium">{remainingCredits}/{subscription.product.credits_included || 0}</div>
-                          <div className="text-xs text-gray-500">
-                            {subscription.crediti_usati} utilizzati
-                          </div>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {subscription.product.price ? (
-                        <div className="flex items-center space-x-1"> // Keep this line
-                          <Euro className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium">{subscription.product.price}</span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="space-y-1">
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${status.color}`}>
-                          {status.label}
-                        </span>
-                        {subscription.rinnovo_automatico && (
-                          <div className="flex items-center space-x-1">
-                            <TrendingUp className="w-3 h-3 text-green-500" />
-                            <span className="text-xs text-green-600">Auto-rinnovo</span>
+                            {product.description}
                           </div>
                         )}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 p-1 rounded">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button className="text-red-600 hover:text-red-900 p-1 rounded">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                        <button className="text-gray-600 hover:text-gray-900 p-1 rounded">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getDurationColor(product.duration_unit)}`}>
+                      {getDurationLabel(product.duration_unit, product.duration_value)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex items-center space-x-1">
+                      <Euro className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium">{product.price.toFixed(2)}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {product.duration_unit === 'credits' && product.credits_included ? (
+                      <div className="flex items-center space-x-1">
+                        <CreditCard className="w-4 h-4 text-orange-400" />
+                        <span className="font-medium">{product.credits_included}</span>
                       </div>
-                    </td>
-                  </tr>
-                )
-              })}
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {getStatusBadge(product.is_active)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(product.created_at).toLocaleDateString('it-IT')}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end space-x-2">
+                      <button className="text-blue-600 hover:text-blue-900 p-1 rounded">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button className="text-red-600 hover:text-red-900 p-1 rounded">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <button className="text-gray-600 hover:text-gray-900 p-1 rounded">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        {filteredSubscriptions.length === 0 && (
+        {filteredProducts.length === 0 && (
           <div className="text-center py-12">
-            <CreditCard className="mx-auto h-12 w-12 text-gray-400" />
+            <Package className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">Nessun abbonamento trovato</h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || durationFilter !== 'all' || statusFilter !== 'all'
@@ -414,7 +335,6 @@ export function SubscriptionsTable() {
           </div>
         )}
       </div>
-
 
       {/* New Subscription Product Modal */}
       <NewSubscriptionProductModal
