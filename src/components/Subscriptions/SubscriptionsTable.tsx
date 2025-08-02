@@ -19,13 +19,13 @@ export function SubscriptionsTable() {
         .from('subscriptions')
         .select(`
           *,
-          member:members!inner(
+          member:members(
             nome,
             cognome,
             email,
             stato
           ),
-          product:subscription_products!inner(
+          product:subscription_products(
             name,
             description,
             price,
@@ -37,9 +37,17 @@ export function SubscriptionsTable() {
         .order('creato_il', { ascending: false })
 
       if (error) throw error
-      setSubscriptions(data || [])
+      
+      // Filter out subscriptions without valid member or product data
+      const validSubscriptions = (data || []).filter(
+        subscription => subscription.member && subscription.product
+      )
+      
+      setSubscriptions(validSubscriptions)
     } catch (error) {
       console.error('Error fetching subscriptions:', error)
+      // Set empty array on error to prevent UI crashes
+      setSubscriptions([])
     } finally {
       setLoading(false)
     }
