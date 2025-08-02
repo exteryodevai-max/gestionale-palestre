@@ -26,6 +26,20 @@ export type BookingStatus = 'prenotato' | 'presente' | 'no_show' | 'disdetto' //
 export type EquipmentStatus = 'attiva' | 'guasta' | 'fuori_uso' | 'manutenzione'
 export type NotificationType = 'info' | 'warning' | 'success' | 'error'
 
+export interface SubscriptionProduct {
+  id: string
+  name: string
+  description?: string
+  price: number
+  duration_value: number
+  duration_unit: DurationUnitType
+  credits_included?: number
+  is_active: boolean
+  gym_id?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface User {
   id: string
   nome: string
@@ -61,20 +75,6 @@ export interface Member {
   foto_url?: string
   gym_id?: string
   creato_il: string
-}
-
-export interface SubscriptionProduct { // New interface for subscription products
-  id: string
-  name: string
-  description?: string
-  price: number
-  duration_value: number
-  duration_unit: DurationUnitType
-  credits_included?: number // Number of credits included, if duration_unit is 'credits'
-  is_active: boolean
-  gym_id?: string
-  created_at: string
-  updated_at: string
 }
 
 export interface Subscription {
