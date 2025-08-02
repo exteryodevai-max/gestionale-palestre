@@ -21,7 +21,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 
 export type UserRole = 'super_admin' | 'admin' | 'trainer' | 'staff'
 export type MemberStatus = 'attivo' | 'scaduto' | 'sospeso'
-export type SubscriptionType = 'mensile' | 'trimestrale' | 'annuale' | 'a_crediti'
+export type DurationUnitType = 'days' | 'weeks' | 'months' | 'years' | 'credits'
 export type BookingStatus = 'prenotato' | 'presente' | 'no_show' | 'disdetto'
 export type EquipmentStatus = 'attiva' | 'guasta' | 'fuori_uso' | 'manutenzione'
 export type NotificationType = 'info' | 'warning' | 'success' | 'error'
@@ -63,18 +63,30 @@ export interface Member {
   creato_il: string
 }
 
+export interface SubscriptionProduct {
+  id: string
+  name: string
+  description?: string
+  price: number
+  duration_value: number
+  duration_unit: DurationUnitType
+  credits_included?: number
+  is_active: boolean
+  gym_id?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Subscription {
   id: string
   member_id: string
-  tipo: SubscriptionType
-  nome: string
+  product_id: string
   data_inizio: string
   data_fine?: string
-  crediti_totali: number
   crediti_usati: number
-  prezzo?: number
   rinnovo_automatico: boolean
   attivo: boolean
+  creato_da?: string
   creato_il: string
 }
 
@@ -127,4 +139,5 @@ export interface SubscriptionWithMember extends Subscription {
     email?: string
     stato: MemberStatus
   }
+  product: SubscriptionProduct
 }
