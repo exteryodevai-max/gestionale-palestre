@@ -24,6 +24,8 @@ function App() {
         return <SubscriptionsTable />
       case 'member-subscriptions':
         return <MemberSubscriptionsTable />
+      case 'courses':
+        return <CoursesTable />
       case 'calendar':
         return <div><h1 className="text-2xl font-bold">Calendario e Prenotazioni</h1><p className="text-gray-600 mt-2">Modulo in sviluppo...</p></div>
       case 'staff':
