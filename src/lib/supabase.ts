@@ -145,5 +145,35 @@ export interface SubscriptionWithMember extends Subscription {
 export interface CourseWithRelations extends Course {
   area?: { nome: string }
   trainer?: { nome: string; cognome: string }
-  product: SubscriptionProduct
+}
+
+export interface CourseInstance {
+  id: string
+  course_id: string
+  trainer_id: string
+  area_id: string
+  start_time: string
+  end_time: string
+  max_capacity: number
+  current_bookings_count: number
+  is_cancelled: boolean
+  gym_id?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CourseInstanceWithRelations extends CourseInstance {
+  course: {
+    nome: string
+    descrizione?: string
+    colore: string
+    durata_minuti: number
+  }
+  trainer: {
+    nome: string
+    cognome: string
+  }
+  area: {
+    nome: string
+  }
 }
