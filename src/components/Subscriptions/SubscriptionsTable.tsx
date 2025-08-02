@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Search, Plus, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Users, TrendingUp, AlertCircle, Package } from 'lucide-react'
+import { Search, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Users, TrendingUp, AlertCircle, Package } from 'lucide-react'
 import { supabase, SubscriptionWithMember, DurationUnitType } from '../../lib/supabase'
-import { NewSubscriptionModal } from './NewSubscriptionModal'
 import { NewSubscriptionProductModal } from './NewSubscriptionProductModal'
 
 export function SubscriptionsTable() {
@@ -10,7 +9,6 @@ export function SubscriptionsTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const [durationFilter, setDurationFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [showNewSubscriptionModal, setShowNewSubscriptionModal] = useState(false)
   const [showNewSubscriptionProductModal, setShowNewSubscriptionProductModal] = useState(false)
 
   useEffect(() => {
@@ -57,9 +55,6 @@ export function SubscriptionsTable() {
     }
   }
 
-  const handleSubscriptionCreated = () => {
-    fetchSubscriptions() // Ricarica la lista dopo la creazione
-  }
 
   const handleProductCreated = () => {
     // Potresti voler ricaricare anche i prodotti se necessario
@@ -168,22 +163,13 @@ export function SubscriptionsTable() {
             {filteredSubscriptions.length} abbonamenti trovati
           </p>
         </div>
-        <div className="flex space-x-3">
-          <button 
-            onClick={() => setShowNewSubscriptionProductModal(true)}
-            className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <Package className="w-4 h-4" />
-            <span>Nuovo Prodotto</span>
-          </button>
-          <button 
-            onClick={() => setShowNewSubscriptionModal(true)}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nuovo Abbonamento</span>
-          </button>
-        </div>
+        <button 
+          onClick={() => setShowNewSubscriptionProductModal(true)}
+          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          <Package className="w-4 h-4" />
+          <span>Nuovo Prodotto</span>
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -429,12 +415,6 @@ export function SubscriptionsTable() {
         )}
       </div>
 
-      {/* New Subscription Modal */}
-      <NewSubscriptionModal
-        isOpen={showNewSubscriptionModal}
-        onClose={() => setShowNewSubscriptionModal(false)}
-        onSubscriptionCreated={handleSubscriptionCreated}
-      />
 
       {/* New Subscription Product Modal */}
       <NewSubscriptionProductModal
