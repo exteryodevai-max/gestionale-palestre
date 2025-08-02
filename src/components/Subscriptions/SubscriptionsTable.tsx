@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Filter, MoreHorizontal, Edit2, Trash2, CreditCard, Calendar, Euro, Users, TrendingUp, AlertCircle } from 'lucide-react'
 import { supabase, SubscriptionWithMember, DurationUnitType } from '../../lib/supabase'
+import { NewSubscriptionModal } from './NewSubscriptionModal'
 
 export function SubscriptionsTable() {
   const [subscriptions, setSubscriptions] = useState<SubscriptionWithMember[]>([])
@@ -8,6 +9,7 @@ export function SubscriptionsTable() {
   const [searchTerm, setSearchTerm] = useState('')
   const [durationFilter, setDurationFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [showNewSubscriptionModal, setShowNewSubscriptionModal] = useState(false)
 
   useEffect(() => {
     fetchSubscriptions()
@@ -51,6 +53,10 @@ export function SubscriptionsTable() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSubscriptionCreated = () => {
+    fetchSubscriptions() // Ricarica la lista dopo la creazione
   }
 
   const filteredSubscriptions = subscriptions.filter(subscription => {
@@ -155,7 +161,10 @@ export function SubscriptionsTable() {
             {filteredSubscriptions.length} abbonamenti trovati
           </p>
         </div>
-        <button className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+        <button 
+          onClick={() => setShowNewSubscriptionModal(true)}
+          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
           <Plus className="w-4 h-4" />
           <span>Nuovo Abbonamento</span>
         </button>
@@ -403,6 +412,13 @@ export function SubscriptionsTable() {
           </div>
         )}
       </div>
+
+      {/* New Subscription Modal */}
+      <NewSubscriptionModal
+        isOpen={showNewSubscriptionModal}
+        onClose={() => setShowNewSubscriptionModal(false)}
+        onSubscriptionCreated={handleSubscriptionCreated}
+      />
     </div>
   )
 }
