@@ -6,6 +6,7 @@ import { Dashboard } from './components/Dashboard/Dashboard'
 import { MembersTable } from './components/Members/MembersTable'
 import { SubscriptionsTable } from './components/Subscriptions/SubscriptionsTable'
 import { MemberSubscriptionsTable } from './components/Subscriptions/MemberSubscriptionsTable'
+import { StaffTable } from './components/Staff/StaffTable'
 import { AlertTriangle } from 'lucide-react'
 
 function App() {
@@ -26,7 +27,7 @@ function App() {
       case 'calendar':
         return <div><h1 className="text-2xl font-bold">Calendario e Prenotazioni</h1><p className="text-gray-600 mt-2">Modulo in sviluppo...</p></div>
       case 'staff':
-        return <div><h1 className="text-2xl font-bold">Gestione Staff</h1><p className="text-gray-600 mt-2">Modulo in sviluppo...</p></div>
+        return <StaffTable />
       case 'equipment':
         return <div><h1 className="text-2xl font-bold">Gestione Attrezzature</h1><p className="text-gray-600 mt-2">Modulo in sviluppo...</p></div>
       case 'nfc':
