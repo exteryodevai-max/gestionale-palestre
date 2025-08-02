@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Filter, MoreHorizontal, Edit2, Trash2, Dumbbell, X, AlertCircle, Calendar, Euro, Users } from 'lucide-react'
-import { supabase, Course, Area, User } from '../../lib/supabase'
+import { supabase, Course, Area, User, CourseWithRelations } from '../../lib/supabase'
 import { NewCourseModal } from './NewCourseModal'
 import { EditCourseModal } from './EditCourseModal'
 
@@ -16,7 +16,7 @@ export function CoursesTable() {
   const [areaFilter, setAreaFilter] = useState<string>('all')
   const [trainerFilter, setTrainerFilter] = useState<string>('all')
   const [showNewCourseModal, setShowNewCourseModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false) // This line is already present
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null)

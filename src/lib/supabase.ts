@@ -141,3 +141,9 @@ export interface SubscriptionWithMember extends Subscription {
   }
   product: SubscriptionProduct
 }
+
+export interface CourseWithRelations extends Course {
+  area?: { nome: string }
+  trainer?: { nome: string; cognome: string }
+  product: SubscriptionProduct
+}

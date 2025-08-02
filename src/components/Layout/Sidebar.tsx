@@ -12,7 +12,8 @@ import {
   Bell,
   LogOut,
   ChevronLeft,
-  UserCheck,
+  UserCheck, // For Staff
+  MapPin, // For Areas
   Zap,
   Receipt
 } from 'lucide-react'
@@ -35,6 +36,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed }: Si
     { id: 'member-subscriptions', label: 'Sottoscrizioni', icon: Receipt },
     { id: 'courses', label: 'Corsi', icon: Dumbbell },
     { id: 'calendar', label: 'Calendario', icon: Calendar },
+    { id: 'areas', label: 'Aree', icon: MapPin }, // New: Add Areas menu item
     { id: 'staff', label: 'Staff', icon: UserCheck },
     { id: 'equipment', label: 'Attrezzature', icon: Dumbbell },
     { id: 'nfc', label: 'NFC/QR', icon: Smartphone },

@@ -7,6 +7,7 @@ import { MembersTable } from './components/Members/MembersTable'
 import { SubscriptionsTable } from './components/Subscriptions/SubscriptionsTable'
 import { MemberSubscriptionsTable } from './components/Subscriptions/MemberSubscriptionsTable'
 import { StaffTable } from './components/Staff/StaffTable'
+import { AreasTable } from './components/Areas/AreasTable' // New: Import AreasTable
 import { CoursesTable } from './components/Courses/CoursesTable'
 import { AlertTriangle } from 'lucide-react'
 
@@ -25,6 +26,8 @@ function App() {
         return <SubscriptionsTable />
       case 'member-subscriptions':
         return <MemberSubscriptionsTable />
+      case 'areas': // New: Add case for Areas
+        return <AreasTable /> // New: Render AreasTable
       case 'courses':
         return <CoursesTable />
       case 'courses':
