@@ -13,16 +13,33 @@ Un sistema completo e moderno per la gestione di palestre e centri fitness, svil
 - **Pannello admin/super admin**: Controlli avanzati per amministratori
 
 ### 👥 Gestione Iscritti
+- **CRUD Completo**: Creazione, modifica ed eliminazione iscritti
 - **Anagrafica completa**: Dati personali, contatti, certificati medici
 - **Stati personalizzabili**: Attivo, scaduto, sospeso
 - **Ricerca avanzata**: Filtri per nome, email, stato
 - **Validazione dati**: Controlli automatici su email, telefono, codice fiscale
+- **Gestione certificati**: Monitoraggio scadenza certificati medici
+- **Note personalizzate**: Campo note per informazioni aggiuntive
+- **Conferma eliminazione**: Protezione contro eliminazioni accidentali
 
 ### 💳 Gestione Abbonamenti
-- **Tipologie multiple**: Mensile, trimestrale, annuale, a crediti
-- **Monitoraggio scadenze**: Notifiche automatiche per abbonamenti in scadenza
-- **Gestione crediti**: Tracciamento utilizzo per abbonamenti a consumo
-- **Rinnovi automatici**: Sistema di auto-rinnovo configurabile
+- **CRUD Completo**: Creazione, modifica ed eliminazione prodotti abbonamento
+- **Tipologie multiple**: Giornaliero, settimanale, mensile, annuale, a crediti
+- **Gestione prezzi**: Configurazione prezzi flessibile per ogni tipologia
+- **Durata personalizzabile**: Definizione durata specifica per ogni abbonamento
+- **Abbonamenti a crediti**: Gestione pacchetti con numero crediti inclusi
+- **Stati configurabili**: Attivazione/disattivazione prodotti abbonamento
+- **Validazione avanzata**: Controlli automatici su prezzi, durate e crediti
+
+### 🎫 Gestione Sottoscrizioni
+- **Associazione abbonamenti**: Collegamento iscritti ai prodotti abbonamento
+- **CRUD Completo**: Creazione, modifica ed eliminazione sottoscrizioni
+- **Calcolo automatico date**: Data fine calcolata automaticamente in base alla durata
+- **Gestione crediti**: Tracciamento utilizzo crediti per abbonamenti a consumo
+- **Stati dinamici**: Attivo, scaduto, in scadenza con badge colorati
+- **Monitoraggio scadenze**: Identificazione automatica sottoscrizioni in scadenza
+- **Rinnovi configurabili**: Impostazione rinnovo automatico per sottoscrizione
+- **Dashboard statistiche**: Ricavi attivi, sottoscrizioni attive, scadenze imminenti
 
 ### 📅 Sistema Prenotazioni
 - **Calendario integrato**: Visualizzazione corsi e disponibilità
