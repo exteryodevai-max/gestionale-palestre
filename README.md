@@ -347,18 +347,24 @@ Questo progetto è rilasciato sotto licenza MIT. Vedi il file `LICENSE` per dett
 - [ ] Integrazione pagamenti Stripe
 - [ ] Sistema loyalty points
 - [ ] Chat integrata trainer-membri
+- [ ] Notifiche automatiche scadenze abbonamenti
+- [ ] Report avanzati sottoscrizioni e ricavi
 
 ### v2.1 (Q3 2024)
 - [ ] AI per raccomandazioni workout
 - [ ] Integrazione wearables (Fitbit, Apple Watch)
 - [ ] Sistema prenotazione online pubblico
 - [ ] Multi-lingua (EN, ES, FR, DE)
+- [ ] Gestione pagamenti ricorrenti automatici
+- [ ] Sistema fatturazione integrato
 
 ### v3.0 (Q4 2024)
 - [ ] Marketplace corsi online
 - [ ] Sistema franchising multi-sede
 - [ ] Advanced analytics con ML
 - [ ] Integrazione social media
+- [ ] API pubbliche per integrazioni esterne
+- [ ] Sistema CRM avanzato
 
 ---
 
