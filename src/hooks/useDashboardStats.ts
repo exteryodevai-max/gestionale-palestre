@@ -62,11 +62,11 @@ export function useDashboardStats() {
       const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
       const { data: monthlySubscriptions } = await supabase
         .from('subscriptions')
-        .select('prezzo')
+        .select('product:subscription_products(price)')
         .eq('attivo', true)
         .gte('creato_il', startOfMonth)
 
-      const monthlyRevenue = monthlySubscriptions?.reduce((sum, sub) => sum + (sub.prezzo || 0), 0) || 0
+      const monthlyRevenue = monthlySubscriptions?.reduce((sum, sub) => sum + (sub.product?.price || 0), 0) || 0
 
       setStats({
         activeMembers: activeMembers || 0,
