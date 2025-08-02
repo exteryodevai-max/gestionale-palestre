@@ -57,17 +57,6 @@ export function LoginForm() {
 
         {/* Login Form */}
         <div className="bg-white py-8 px-6 shadow-lg rounded-xl border border-gray-200">
-          {/* Debug Info */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-800 mb-2">🔧 Modalità Debug</h3>
-            <p className="text-xs text-blue-700">
-              Controlla la console del browser (F12) per i log dettagliati dell'autenticazione.
-            </p>
-            <p className="text-xs text-blue-700 mt-1">
-              Se vedi errori sulla tabella 'users', significa che il database non è configurato.
-            </p>
-          </div>
-          
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <ErrorDisplay 

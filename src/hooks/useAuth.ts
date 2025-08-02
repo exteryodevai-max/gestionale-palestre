@@ -7,31 +7,23 @@ export function useAuth() {
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('🔍 useAuth: Inizio controllo sessione')
-    
     const checkSession = async () => {
       try {
         setLoading(true)
         setAuthError(null)
         
-        console.log('🔍 Controllo sessione Supabase...')
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
-          console.error('❌ Errore nel recupero sessione:', sessionError)
+          console.error('Errore nel recupero sessione:', sessionError)
           setAuthError(`Errore sessione: ${sessionError.message}`)
           setUser(null)
           setLoading(false)
           return
         }
         
-        console.log('📋 Sessione:', session ? 'presente' : 'assente')
-        
         if (session?.user) {
-          console.log('👤 Utente autenticato:', session.user.email)
-          
           // Prova a recuperare i dati dell'utente dalla tabella users
-          console.log('🔍 Recupero dati utente dalla tabella users...')
           const { data: userData, error: userError } = await supabase
             .from('users')
             .select('*')
@@ -39,29 +31,25 @@ export function useAuth() {
             .maybeSingle()
             
           if (userError) {
-            console.error('❌ Errore nel recupero dati utente:', userError)
+            console.error('Errore nel recupero dati utente:', userError)
             setAuthError(`Errore database: ${userError.message}. Verifica che la tabella 'users' esista e sia configurata correttamente.`)
             setUser(null)
           } else if (!userData) {
-            console.warn('⚠️ Utente autenticato ma non trovato nella tabella users')
+            console.warn('Utente autenticato ma non trovato nella tabella users')
             setAuthError('Il tuo account non è stato trovato nel database. Contatta l\'amministratore.')
             setUser(null)
-            // Non fare logout automatico per ora, per debug
           } else {
-            console.log('✅ Dati utente recuperati:', userData.email, userData.ruolo)
             setUser(userData as User)
           }
         } else {
-          console.log('👤 Nessun utente autenticato')
           setUser(null)
         }
       } catch (error: any) {
-        console.error('💥 Errore generale nel controllo sessione:', error)
+        console.error('Errore generale nel controllo sessione:', error)
         setAuthError(`Errore di sistema: ${error.message}`)
         setUser(null)
       } finally {
         setLoading(false)
-        console.log('✅ Controllo sessione completato')
       }
     }
     
@@ -69,14 +57,10 @@ export function useAuth() {
     
     // Ascolta i cambiamenti di autenticazione
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 Auth state change:', event)
-      
       if (event === 'SIGNED_IN' && session) {
-        console.log('✅ Utente loggato:', session.user.email)
         // Ricarica i dati utente
         checkSession()
       } else if (event === 'SIGNED_OUT') {
-        console.log('👋 Utente disconnesso')
         setUser(null)
         setAuthError(null)
       }
@@ -92,15 +76,13 @@ export function useAuth() {
       setLoading(true)
       setAuthError(null)
       
-      console.log('🔐 Tentativo di login per:', email)
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       })
       
       if (error) {
-        console.error('❌ Errore di login:', error)
+        console.error('Errore di login:', error)
         let errorMessage = error.message
         
         if (errorMessage.includes('Invalid login credentials')) {
@@ -113,10 +95,9 @@ export function useAuth() {
         return { success: false, error: errorMessage }
       }
       
-      console.log('✅ Login riuscito per:', email)
       return { success: true }
     } catch (error: any) {
-      console.error('💥 Errore durante il login:', error)
+      console.error('Errore durante il login:', error)
       setAuthError(`Errore di sistema: ${error.message}`)
       return { success: false, error: error.message }
     } finally {
@@ -129,19 +110,18 @@ export function useAuth() {
       setLoading(true)
       setAuthError(null)
       
-      console.log('👋 Logout in corso...')
       const { error } = await supabase.auth.signOut()
       
       if (error) {
-        console.error('❌ Errore durante il logout:', error)
+        console.error('Errore durante il logout:', error)
         setAuthError(`Errore durante il logout: ${error.message}`)
       } else {
-        console.log('✅ Logout completato')
+        console.log('Logout completato')
       }
       
       setUser(null)
     } catch (error: any) {
-      console.error('💥 Errore durante il logout:', error)
+      console.error('Errore durante il logout:', error)
       setAuthError(`Errore di sistema: ${error.message}`)
     } finally {
       setLoading(false)
