@@ -13,7 +13,8 @@ import {
   LogOut,
   ChevronLeft,
   UserCheck,
-  Zap
+  Zap,
+  Receipt
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -31,6 +32,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed }: Si
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'members', label: 'Iscritti', icon: Users },
     { id: 'subscriptions', label: 'Abbonamenti', icon: CreditCard },
+    { id: 'member-subscriptions', label: 'Sottoscrizioni', icon: Receipt },
     { id: 'calendar', label: 'Calendario', icon: Calendar },
     { id: 'staff', label: 'Staff', icon: UserCheck },
     { id: 'equipment', label: 'Attrezzature', icon: Dumbbell },
