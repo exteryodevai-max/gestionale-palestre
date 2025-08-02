@@ -7,6 +7,7 @@ import { MembersTable } from './components/Members/MembersTable'
 import { SubscriptionsTable } from './components/Subscriptions/SubscriptionsTable'
 import { MemberSubscriptionsTable } from './components/Subscriptions/MemberSubscriptionsTable'
 import { StaffTable } from './components/Staff/StaffTable'
+import { CoursesTable } from './components/Courses/CoursesTable'
 import { AlertTriangle } from 'lucide-react'
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
         return <SubscriptionsTable />
       case 'member-subscriptions':
         return <MemberSubscriptionsTable />
+      case 'courses':
+        return <CoursesTable />
       case 'courses':
         return <CoursesTable />
       case 'calendar':
