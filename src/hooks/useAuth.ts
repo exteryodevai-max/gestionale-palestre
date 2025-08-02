@@ -28,7 +28,8 @@ export function useAuth() {
   const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('useAuth useEffect: Inizio esecuzione. loading:', loading)
+    console.log('useAuth useEffect: Inizio esecuzione.')
+    console.log('useAuth useEffect: isSupabaseConfigured:', isSupabaseConfigured)
     
     // Se Supabase non è configurato, usa la modalità demo
     if (!isSupabaseConfigured) {
@@ -37,7 +38,7 @@ export function useAuth() {
       setIsDemo(true)
       setLoading(false)
       console.log('useAuth useEffect: Modalità demo attivata. loading impostato a false.')
-      return
+      return // Exit early - no auth listener needed in demo mode
     }
     
     // Controlla la sessione corrente
@@ -90,7 +91,7 @@ export function useAuth() {
     
     checkSession()
     
-    // Ascolta i cambiamenti di autenticazione
+    // Ascolta i cambiamenti di autenticazione (solo se Supabase è configurato)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('onAuthStateChange: Evento:', event, 'loading:', loading)
       setLoading(true)
@@ -142,7 +143,7 @@ export function useAuth() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [isSupabaseConfigured]) // Add dependency to re-run if Supabase config changes
 
   const signIn = async (email: string, password: string) => {
     // In modalità demo, accetta qualsiasi credenziale
