@@ -36,9 +36,14 @@ export async function createTestUser() {
       .from('users')
       .select('*')
       .eq('email', 'patrick.cioni@admin.com')
-      .single()
+      .maybeSingle()
     
-    if (!checkError && existingUser) {
+    if (checkError) {
+      console.error('❌ Errore nel controllo utente esistente:', checkError)
+      return { success: false, error: checkError.message }
+    }
+    
+    if (existingUser) {
       console.log('✅ Utente test già esistente, non è necessario crearlo di nuovo')
       return { success: true, user: existingUser }
     }
@@ -66,11 +71,16 @@ export async function createTestUser() {
       .from('users')
       .select('*')
       .eq('email', 'patrick.cioni@admin.com')
-      .single()
+      .maybeSingle()
     
     if (userError) {
       console.error('❌ Errore nel recupero dati utente:', userError)
       return { success: false, error: userError.message }
+    }
+    
+    if (!userData) {
+      console.error('❌ Utente non trovato nel database dopo l\'autenticazione')
+      return { success: false, error: 'Utente autenticato ma profilo non trovato nel database. Verifica che esista un record nella tabella users.' }
     }
     
     console.log('✅ Dati utente test recuperati con successo')

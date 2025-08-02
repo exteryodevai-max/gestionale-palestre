@@ -52,18 +52,19 @@ export function useAuth() {
             .from('users')
             .select('*')
             .eq('email', session.user.email)
-            .single()
+            .maybeSingle()
             
           if (userError) {
             console.error('Errore nel recupero dati utente:', userError)
             setUser(null)
             setAuthError(`Errore nel recupero dati utente: ${userError.message}`)
-            // Se l'utente è autenticato ma non esiste nel database, effettua il logout
-            if (userError.code === 'PGRST116') {
-              console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
-              await supabase.auth.signOut()
-              setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore.')
-            }
+            await supabase.auth.signOut()
+          } else if (!userData) {
+            // L'utente è autenticato ma non esiste nel database
+            console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
+            setUser(null)
+            setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore per completare la configurazione del profilo.')
+            await supabase.auth.signOut()
           } else {
             setUser(userData as User)
           }
@@ -93,18 +94,19 @@ export function useAuth() {
             .from('users')
             .select('*')
             .eq('email', session.user.email)
-            .single()
+            .maybeSingle()
             
           if (userError) {
             console.error('Errore nel recupero dati utente:', userError)
             setUser(null)
             setAuthError(`Errore nel recupero dati utente: ${userError.message}`)
-            // Se l'utente è autenticato ma non esiste nel database, effettua il logout
-            if (userError.code === 'PGRST116') {
-              console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
-              await supabase.auth.signOut()
-              setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore.')
-            }
+            await supabase.auth.signOut()
+          } else if (!userData) {
+            // L'utente è autenticato ma non esiste nel database
+            console.warn('Utente autenticato ma non trovato nel database. Effettuo logout automatico.')
+            setUser(null)
+            setAuthError('Il tuo account non è stato trovato nel sistema. Contatta l\'amministratore per completare la configurazione del profilo.')
+            await supabase.auth.signOut()
           } else {
             setUser(userData as User)
             
