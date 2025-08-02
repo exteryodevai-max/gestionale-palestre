@@ -33,6 +33,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed }: Si
     { id: 'members', label: 'Iscritti', icon: Users },
     { id: 'subscriptions', label: 'Abbonamenti', icon: CreditCard },
     { id: 'member-subscriptions', label: 'Sottoscrizioni', icon: Receipt },
+    { id: 'courses', label: 'Corsi', icon: Dumbbell },
     { id: 'calendar', label: 'Calendario', icon: Calendar },
     { id: 'staff', label: 'Staff', icon: UserCheck },
     { id: 'equipment', label: 'Attrezzature', icon: Dumbbell },
