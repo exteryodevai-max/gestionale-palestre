@@ -154,7 +154,7 @@ export function NewAreaModal({ isOpen, onClose, onAreaCreated }: NewAreaModalPro
                     type="text"
                     value={formData.nome}
                     onChange={(e) => handleInputChange('nome', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                    className={\`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
                       errors.nome ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="es. Sala Pesi, Sala Corsi A, Piscina"
@@ -184,7 +184,7 @@ export function NewAreaModal({ isOpen, onClose, onAreaCreated }: NewAreaModalPro
                     min="0"
                     value={formData.capacita_max}
                     onChange={(e) => handleInputChange('capacita_max', parseInt(e.target.value) || 0)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                    className={\`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
                       errors.capacita_max ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="0"
