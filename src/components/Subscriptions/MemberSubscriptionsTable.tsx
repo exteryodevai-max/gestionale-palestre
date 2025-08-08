@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Filter, Plus, Edit2, Trash2, X, AlertCircle, Receipt, User, Calendar, Euro, CreditCard } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { NewMemberSubscriptionModal } from './NewMemberSubscriptionModal'
@@ -56,7 +56,7 @@ export function MemberSubscriptionsTable() {
             email,
             stato
           ),
-          product:subscription_products!inner(
+          product:subscription_products!fk_subscriptions_product_id(
             name,
             price,
             duration_unit,
