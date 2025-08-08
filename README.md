@@ -261,11 +261,46 @@ supabase/
 
 ## 🧪 Testing
 
-### Test Utente Demo
-Il sistema include un utente demo per testing:
+### Utenti Demo per Testing
+Il sistema include diversi utenti demo per testing con ruoli differenti:
+
+#### Utente Admin Principale (Configurato)
 - **Email**: `patrick.cioni@admin.com`
 - **Password**: `admin123`
 - **Ruolo**: Admin
+- **Stato**: ✅ Completamente configurato
+
+#### Altri Utenti Demo Disponibili
+**Nota**: Le seguenti credenziali richiedono la configurazione manuale della password in Supabase Auth Dashboard:
+
+- **Super Admin**
+  - Email: `superadmin@gym.com`
+  - Ruolo: Super Admin
+  - Password: ⚠️ Da impostare manualmente
+
+- **Admin Test**
+  - Email: `admin@test.com`
+  - Ruolo: Super Admin
+  - Password: ⚠️ Da impostare manualmente
+
+- **Admin Gym1**
+  - Email: `admin@gym1.com`
+  - Ruolo: Admin
+  - Password: ⚠️ Da impostare manualmente
+
+- **Trainer Smith**
+  - Email: `trainer@gym1.com`
+  - Ruolo: Trainer
+  - Password: ⚠️ Da impostare manualmente
+
+#### Come Configurare le Password Mancanti
+1. Accedi al Supabase Dashboard
+2. Vai alla sezione "Authentication" > "Users"
+3. Trova l'utente desiderato
+4. Clicca su "Reset Password" o "Set Password"
+5. Imposta una password sicura
+
+L'utente `patrick.cioni@admin.com` è già completamente configurato e pronto per l'uso immediato.
 
 ### Dati di Test
 Puoi popolare il database con dati di esempio per testing:
