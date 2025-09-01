@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, User, Mail, Phone, Shield, Save, AlertCircle, Info, GraduationCap, DollarSign, FileText, Briefcase } from 'lucide-react'
+import { X, User, Mail, Phone, Shield, Save, AlertCircle, Info, GraduationCap, DollarSign, FileText, Briefcase, Plus } from 'lucide-react'
 import { supabase, UserRole } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 
