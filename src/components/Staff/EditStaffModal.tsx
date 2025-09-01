@@ -416,18 +416,6 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Data Scadenza Brevetti
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.brevetti_scadenza}
-                    onChange={(e) => handleInputChange('brevetti_scadenza', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Diplomi e Brevetti
                   </label>
                   <textarea
@@ -439,6 +427,137 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Certificazioni Specifiche */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <GraduationCap className="w-5 h-5 mr-2 text-gray-600" />
+                  Certificazioni con Scadenza
+                </h3>
+                <button
+                  type="button"
+                  onClick={addCertification}
+                  className="flex items-center space-x-2 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Aggiungi</span>
+                </button>
+              </div>
+              
+              {certificazioni.filter(c => !c.toDelete).length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <GraduationCap className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm">Nessuna certificazione presente</p>
+                  <p className="text-xs">Clicca "Aggiungi" per inserire brevetti con scadenze specifiche</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {certificazioni
+                    .filter(cert => !cert.toDelete)
+                    .map((cert, index) => (
+                    <div key={cert.id || index} className="bg-white p-4 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-gray-900">
+                          {cert.nome_certificazione || `Certificazione #${index + 1}`}
+                          {cert.data_scadenza && new Date(cert.data_scadenza) < new Date() && (
+                            <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">Scaduta</span>
+                          )}
+                          {cert.data_scadenza && new Date(cert.data_scadenza) > new Date() && new Date(cert.data_scadenza) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) && (
+                            <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">In scadenza</span>
+                          )}
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => removeCertification(index)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Nome Certificazione *
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.nome_certificazione}
+                            onChange={(e) => updateCertification(index, 'nome_certificazione', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="es. Brevetto BLSD"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Data Scadenza *
+                          </label>
+                          <input
+                            type="date"
+                            value={cert.data_scadenza}
+                            onChange={(e) => updateCertification(index, 'data_scadenza', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Data Rilascio
+                          </label>
+                          <input
+                            type="date"
+                            value={cert.data_rilascio}
+                            onChange={(e) => updateCertification(index, 'data_rilascio', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Ente Rilascio
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.ente_rilascio}
+                            onChange={(e) => updateCertification(index, 'ente_rilascio', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="es. FIN, CONI, ASI"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Numero Certificato
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.numero_certificato}
+                            onChange={(e) => updateCertification(index, 'numero_certificato', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="es. ABC123456"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Note
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.note}
+                            onChange={(e) => updateCertification(index, 'note', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Note aggiuntive..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Informazioni Contrattuali */}

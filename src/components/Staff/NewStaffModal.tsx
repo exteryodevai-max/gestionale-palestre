@@ -462,13 +462,237 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Data Scadenza Brevetti
+                    Diplomi e Brevetti
+                  </label>
+                  <textarea
+                    value={formData.diploma_brevetti}
+                    onChange={(e) => handleInputChange('diploma_brevetti', e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="es. Istruttore Fitness, Personal Trainer, Brevetto Nuoto, Certificazione Yoga..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Certificazioni Specifiche */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <GraduationCap className="w-5 h-5 mr-2 text-gray-600" />
+                  Certificazioni con Scadenza
+                </h3>
+                <button
+                  type="button"
+                  onClick={addCertification}
+                  className="flex items-center space-x-2 px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Aggiungi</span>
+                </button>
+              </div>
+              
+              {certificazioni.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <GraduationCap className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm">Nessuna certificazione aggiunta</p>
+                  <p className="text-xs">Clicca "Aggiungi" per inserire brevetti con scadenze specifiche</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {certificazioni.map((cert, index) => (
+                    <div key={index} className="bg-white p-4 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-gray-900">Certificazione #{index + 1}</h4>
+                        <button
+                          type="button"
+                          onClick={() => removeCertification(index)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Nome Certificazione *
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.nome_certificazione}
+                            onChange={(e) => updateCertification(index, 'nome_certificazione', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="es. Brevetto BLSD"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Data Scadenza *
+                          </label>
+                          <input
+                            type="date"
+                            value={cert.data_scadenza}
+                            onChange={(e) => updateCertification(index, 'data_scadenza', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Data Rilascio
+                          </label>
+                          <input
+                            type="date"
+                            value={cert.data_rilascio}
+                            onChange={(e) => updateCertification(index, 'data_rilascio', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Ente Rilascio
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.ente_rilascio}
+                            onChange={(e) => updateCertification(index, 'ente_rilascio', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="es. FIN, CONI, ASI"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Numero Certificato
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.numero_certificato}
+                            onChange={(e) => updateCertification(index, 'numero_certificato', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="es. ABC123456"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Note
+                          </label>
+                          <input
+                            type="text"
+                            value={cert.note}
+                            onChange={(e) => updateCertification(index, 'note', e.target.value)}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                            placeholder="Note aggiuntive..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Informazioni Contrattuali */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Briefcase className="w-5 h-5 mr-2 text-gray-600" />
+                Informazioni Contrattuali
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo Contratto
+                  </label>
+                  <select
+                    value={formData.tipo_contratto}
+                    onChange={(e) => handleInputChange('tipo_contratto', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  >
+                    <option value="">Seleziona tipo contratto...</option>
+                    <option value="dipendente">Dipendente</option>
+                    <option value="collaboratore">Collaboratore</option>
+                    <option value="freelance">Freelance</option>
+                    <option value="stagista">Stagista</option>
+                    <option value="volontario">Volontario</option>
+                    <option value="altro">Altro</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Partita IVA
                   </label>
                   <input
-                    type="date"
-                    value={formData.brevetti_scadenza}
-                    onChange={(e) => handleInputChange('brevetti_scadenza', e.target.value)}
+                    type="text"
+                    value={formData.partita_iva}
+                    onChange={(e) => handleInputChange('partita_iva', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="12345678901"
+                    maxLength={11}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Note Contrattuali
+                </label>
+                <textarea
+                  value={formData.note_contrattuali}
+                  onChange={(e) => handleInputChange('note_contrattuali', e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
+                />
+              </div>
+            </div>
+
+            {/* Informazioni Economiche */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <DollarSign className="w-5 h-5 mr-2 text-gray-600" />
+                Informazioni Economiche
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Modalità di Pagamento
+                  </label>
+                  <select
+                    value={formData.modalita_pagamento}
+                    onChange={(e) => handleInputChange('modalita_pagamento', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  >
+                    <option value="oraria">Paga Oraria</option>
+                    <option value="mensile">Stipendio Mensile</option>
+                    <option value="percentuale">Percentuale su Corsi</option>
+                    <option value="forfait">Forfait</option>
+                    <option value="mista">Modalità Mista</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {formData.modalita_pagamento === 'oraria' ? 'Paga Oraria (€/h)' :
+                     formData.modalita_pagamento === 'mensile' ? 'Stipendio Mensile (€)' :
+                     formData.modalita_pagamento === 'percentuale' ? 'Percentuale (%)' :
+                     formData.modalita_pagamento === 'forfait' ? 'Forfait (€)' :
+                     'Importo Base (€)'}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step={formData.modalita_pagamento === 'percentuale' ? '0.1' : '0.01'}
+                    value={formData.paga_oraria}
+                    onChange={(e) => handleInputChange('paga_oraria', parseFloat(e.target.value) || 0)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder={formData.modalita_pagamento === 'percentuale' ? '15.0' : '0.00'}
                   />
                 </div>
 
