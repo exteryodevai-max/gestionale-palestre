@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { X, User, Mail, Phone, Shield, Save, AlertCircle, Info } from 'lucide-react'
+import { X, User, Mail, Phone, Shield, Save, AlertCircle, Info, GraduationCap, DollarSign, FileText, Briefcase } from 'lucide-react'
 import { supabase, UserRole } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -20,6 +20,15 @@ interface StaffFormData {
   data_nascita: string
   indirizzo: string
   note: string
+  // Nuovi campi staff
+  titolo_studio: string
+  diploma_brevetti: string
+  brevetti_scadenza: string
+  paga_oraria: number
+  modalita_pagamento: string
+  partita_iva: string
+  tipo_contratto: string
+  note_contrattuali: string
 }
 
 export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditStaffModalProps) {
@@ -33,7 +42,16 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
     attivo: true,
     data_nascita: '',
     indirizzo: '',
-    note: ''
+    note: '',
+    // Nuovi campi staff
+    titolo_studio: '',
+    diploma_brevetti: '',
+    brevetti_scadenza: '',
+    paga_oraria: 0,
+    modalita_pagamento: 'oraria',
+    partita_iva: '',
+    tipo_contratto: '',
+    note_contrattuali: ''
   })
   
   const [loading, setLoading] = useState(false)
@@ -51,7 +69,16 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
         attivo: staff.attivo ?? true,
         data_nascita: staff.data_nascita || '',
         indirizzo: staff.indirizzo || '',
-        note: staff.note || ''
+        note: staff.note || '',
+        // Pre-popola nuovi campi staff
+        titolo_studio: staff.titolo_studio || '',
+        diploma_brevetti: staff.diploma_brevetti || '',
+        brevetti_scadenza: staff.brevetti_scadenza || '',
+        paga_oraria: staff.paga_oraria || 0,
+        modalita_pagamento: staff.modalita_pagamento || 'oraria',
+        partita_iva: staff.partita_iva || '',
+        tipo_contratto: staff.tipo_contratto || '',
+        note_contrattuali: staff.note_contrattuali || ''
       })
     }
   }, [staff])
@@ -117,7 +144,16 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
         data_nascita: formData.data_nascita || null,
         indirizzo: formData.indirizzo.trim() || null,
         note: formData.note.trim() || null,
-        aggiornato_il: new Date().toISOString()
+        aggiornato_il: new Date().toISOString(),
+        // Nuovi campi staff
+        titolo_studio: formData.titolo_studio.trim() || null,
+        diploma_brevetti: formData.diploma_brevetti.trim() || null,
+        brevetti_scadenza: formData.brevetti_scadenza || null,
+        paga_oraria: formData.paga_oraria || null,
+        modalita_pagamento: formData.modalita_pagamento,
+        partita_iva: formData.partita_iva.trim() || null,
+        tipo_contratto: formData.tipo_contratto.trim() || null,
+        note_contrattuali: formData.note_contrattuali.trim() || null
       }
 
       const { data, error } = await supabase
@@ -358,8 +394,26 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
             </div>
 
             {/* Note */}
+            {/* Formazione e Qualifiche */}
             <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Note Aggiuntive</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <GraduationCap className="w-5 h-5 mr-2 text-gray-600" />
+                Formazione e Qualifiche
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Titolo di Studio
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.titolo_studio}
+                    onChange={(e) => handleInputChange('titolo_studio', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="es. Laurea in Scienze Motorie, Diploma ISEF"
+                  />
+                </div>
               
               <textarea
                 value={formData.note}
@@ -371,6 +425,17 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
             </div>
           </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Data Scadenza Brevetti
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.brevetti_scadenza}
+                    onChange={(e) => handleInputChange('brevetti_scadenza', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
           {/* Footer */}
           <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200 bg-gray-50">
             <button
@@ -382,19 +447,136 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
             </button>
             <button
               type="submit"
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Diplomi e Brevetti
+                  </label>
+                  <textarea
+                    value={formData.diploma_brevetti}
+                    onChange={(e) => handleInputChange('diploma_brevetti', e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="es. Istruttore Fitness, Personal Trainer, Brevetto Nuoto, Certificazione Yoga..."
+                  />
+                </div>
+              </div>
+            </div>
               disabled={loading}
+            {/* Informazioni Contrattuali */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Briefcase className="w-5 h-5 mr-2 text-gray-600" />
+                Informazioni Contrattuali
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo Contratto
+                  </label>
+                  <select
+                    value={formData.tipo_contratto}
+                    onChange={(e) => handleInputChange('tipo_contratto', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Seleziona tipo contratto...</option>
+                    <option value="dipendente">Dipendente</option>
+                    <option value="collaboratore">Collaboratore</option>
+                    <option value="freelance">Freelance</option>
+                    <option value="stagista">Stagista</option>
+                    <option value="volontario">Volontario</option>
+                    <option value="altro">Altro</option>
+                  </select>
+                </div>
               className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Partita IVA
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.partita_iva}
+                    onChange={(e) => handleInputChange('partita_iva', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="12345678901"
+                    maxLength={11}
+                  />
+                </div>
+              </div>
+            </div>
             >
+            {/* Informazioni Economiche */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <DollarSign className="w-5 h-5 mr-2 text-gray-600" />
+                Informazioni Economiche
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Modalità di Pagamento
+                  </label>
+                  <select
+                    value={formData.modalita_pagamento}
+                    onChange={(e) => handleInputChange('modalita_pagamento', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="oraria">Paga Oraria</option>
+                    <option value="mensile">Stipendio Mensile</option>
+                    <option value="percentuale">Percentuale su Corsi</option>
+                    <option value="forfait">Forfait</option>
+                    <option value="mista">Modalità Mista</option>
+                  </select>
+                </div>
               {loading ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {formData.modalita_pagamento === 'oraria' ? 'Paga Oraria (€/h)' :
+                     formData.modalita_pagamento === 'mensile' ? 'Stipendio Mensile (€)' :
+                     formData.modalita_pagamento === 'percentuale' ? 'Percentuale (%)' :
+                     formData.modalita_pagamento === 'forfait' ? 'Forfait (€)' :
+                     'Importo Base (€)'}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step={formData.modalita_pagamento === 'percentuale' ? '0.1' : '0.01'}
+                    value={formData.paga_oraria}
+                    onChange={(e) => handleInputChange('paga_oraria', parseFloat(e.target.value) || 0)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={formData.modalita_pagamento === 'percentuale' ? '15.0' : '0.00'}
+                  />
+                </div>
+              </div>
                 <>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Note Contrattuali
+                </label>
+                <textarea
+                  value={formData.note_contrattuali}
+                  onChange={(e) => handleInputChange('note_contrattuali', e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
+                />
+              </div>
+            </div>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            {/* Note Generali */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <FileText className="w-5 h-5 mr-2 text-gray-600" />
+                Note Generali
+              </h3>
                   <span>Aggiornamento...</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
                   <span>Salva Modifiche</span>
-                </>
+                placeholder="Note generali, competenze aggiuntive, informazioni varie..."
               )}
             </button>
           </div>

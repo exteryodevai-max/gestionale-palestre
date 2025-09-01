@@ -59,6 +59,15 @@ export interface User {
   cap?: string
   codice_fiscale?: string
   note?: string
+  // Nuovi campi per dettagli staff
+  titolo_studio?: string
+  diploma_brevetti?: string
+  brevetti_scadenza?: string
+  paga_oraria?: number
+  modalita_pagamento?: string
+  partita_iva?: string
+  tipo_contratto?: string
+  note_contrattuali?: string
 }
 
 export interface Member {
