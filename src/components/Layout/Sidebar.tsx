@@ -31,7 +31,7 @@ export function Sidebar({ activeTab, setActiveTab, collapsed, setCollapsed }: Si
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'members', label: 'Iscritti', icon: Users },
+    { id: 'members', label: 'Anagrafiche', icon: Users },
     { id: 'subscriptions', label: 'Abbonamenti', icon: CreditCard },
     { id: 'member-subscriptions', label: 'Sottoscrizioni', icon: Receipt },
     { id: 'courses', label: 'Corsi', icon: Dumbbell },

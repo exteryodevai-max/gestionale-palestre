@@ -207,7 +207,7 @@ export function NewMemberSubscriptionModal({ isOpen, onClose, onSubscriptionCrea
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Nuova Sottoscrizione</h2>
-              <p className="text-sm text-gray-600">Associa un abbonamento a un iscritto</p>
+              <p className="text-sm text-gray-600">Associa un abbonamento a un'anagrafica</p>
             </div>
           </div>
           <button
@@ -238,7 +238,7 @@ export function NewMemberSubscriptionModal({ isOpen, onClose, onSubscriptionCrea
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Seleziona Iscritto *
+                  Seleziona Anagrafica *
                 </label>
                 <select
                   value={formData.member_id}
@@ -247,7 +247,7 @@ export function NewMemberSubscriptionModal({ isOpen, onClose, onSubscriptionCrea
                     errors.member_id ? 'border-red-300' : 'border-gray-300'
                   }`}
                 >
-                  <option value="">Seleziona un iscritto...</option>
+                  <option value="">Seleziona un'anagrafica...</option>
                   {members.map((member) => (
                     <option key={member.id} value={member.id}>
                       {member.nome} {member.cognome} {member.email && `(${member.email})`}

@@ -122,9 +122,9 @@ export function MembersTable() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestione Iscritti</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Gestione Anagrafiche</h1>
           <p className="text-gray-600 mt-1">
-            {filteredMembers.length} iscritti totali
+            {filteredMembers.length} anagrafiche totali
           </p>
         </div>
         <button 
@@ -132,7 +132,7 @@ export function MembersTable() {
           className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
-          <span>Nuovo Iscritto</span>
+          <span>Nuova Anagrafica</span>
         </button>
       </div>
 
@@ -175,7 +175,7 @@ export function MembersTable() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Iscritto
+                  Anagrafica
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contatti
@@ -281,11 +281,11 @@ export function MembersTable() {
         {filteredMembers.length === 0 && (
           <div className="text-center py-12">
             <UserCheck className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Nessun iscritto trovato</h3>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Nessuna anagrafica trovata</h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || statusFilter !== 'all' 
                 ? 'Prova a modificare i filtri di ricerca' 
-                : 'Inizia aggiungendo il primo iscritto'
+                : 'Inizia aggiungendo la prima anagrafica'
               }
             </p>
           </div>
@@ -335,7 +335,7 @@ export function MembersTable() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">
-                      Sei sicuro di voler eliminare l'iscritto:
+                      Sei sicuro di voler eliminare l'anagrafica:
                     </p>
                     <p className="font-semibold text-gray-900">
                       {memberToDelete.nome} {memberToDelete.cognome}
@@ -343,7 +343,7 @@ export function MembersTable() {
                   </div>
                 </div>
                 <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-                  ⚠️ Questa azione non può essere annullata. L'iscritto e tutti i suoi dati verranno eliminati definitivamente.
+                  ⚠️ Questa azione non può essere annullata. L'anagrafica e tutti i suoi dati verranno eliminati definitivamente.
                 </p>
               </div>
               

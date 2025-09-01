@@ -145,8 +145,8 @@ export function NewMemberModal({ isOpen, onClose, onMemberCreated }: NewMemberMo
               <User className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Nuovo Iscritto</h2>
-              <p className="text-sm text-gray-600">Aggiungi un nuovo membro alla palestra</p>
+              <h2 className="text-xl font-bold text-gray-900">Nuova Anagrafica</h2>
+              <p className="text-sm text-gray-600">Aggiungi una nuova anagrafica alla palestra</p>
             </div>
           </div>
           <button
@@ -304,7 +304,7 @@ export function NewMemberModal({ isOpen, onClose, onMemberCreated }: NewMemberMo
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Stato Iscrizione
+                    Stato Anagrafica
                   </label>
                   <select
                     value={formData.stato}
@@ -370,7 +370,7 @@ export function NewMemberModal({ isOpen, onClose, onMemberCreated }: NewMemberMo
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  <span>Crea Iscritto</span>
+                  <span>Crea Anagrafica</span>
                 </>
               )}
             </button>

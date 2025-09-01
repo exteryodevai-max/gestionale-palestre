@@ -80,8 +80,8 @@ interface QuickActionsProps {
 export function QuickActions({ onActionClick }: QuickActionsProps) {
   const actions = [
     {
-      title: 'Nuovo Iscritto',
-      description: 'Aggiungi un nuovo membro',
+      title: 'Nuova Anagrafica',
+      description: 'Aggiungi una nuova anagrafica',
       icon: UserPlus,
       color: 'blue',
       action: 'new-member'

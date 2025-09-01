@@ -200,6 +200,7 @@ export function useDashboardStats() {
         todayBookings,
         monthlyRevenue,
         membersChange: activeMembers ? `${activeMembers} totali` : 'Nessun iscritto',
+        membersChange: activeMembers ? `${activeMembers} totali` : 'Nessuna anagrafica',
         membersChangeType: 'neutral',
         accessChange: todayAccess ? `${todayAccess} ingressi` : 'Nessun ingresso',
         accessChangeType: 'neutral',

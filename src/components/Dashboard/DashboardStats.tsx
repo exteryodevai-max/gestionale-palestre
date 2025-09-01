@@ -61,7 +61,7 @@ export function DashboardStats() {
 
   const statsConfig = [
     {
-      title: 'Iscritti Attivi',
+      title: 'Anagrafiche Attive',
       value: stats.activeMembers,
       change: stats.membersChange,
       changeType: stats.membersChangeType,

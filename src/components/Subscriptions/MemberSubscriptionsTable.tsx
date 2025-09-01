@@ -280,7 +280,7 @@ export function MemberSubscriptionsTable() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Iscritto
+                  Anagrafica
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Abbonamento
@@ -436,7 +436,7 @@ export function MemberSubscriptionsTable() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">
-                      Sei sicuro di voler eliminare la sottoscrizione di:
+                      Sei sicuro di voler eliminare la sottoscrizione dell'anagrafica:
                     </p>
                     <p className="font-semibold text-gray-900">
                       {subscriptionToDelete.member.nome} {subscriptionToDelete.member.cognome}

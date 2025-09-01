@@ -152,7 +152,7 @@ export function EditMemberModal({ isOpen, onClose, onMemberUpdated, member }: Ed
               <User className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Modifica Iscritto</h2>
+              <h2 className="text-xl font-bold text-gray-900">Modifica Anagrafica</h2>
               <p className="text-sm text-gray-600">Aggiorna i dati di {member.nome} {member.cognome}</p>
             </div>
           </div>
@@ -311,7 +311,7 @@ export function EditMemberModal({ isOpen, onClose, onMemberUpdated, member }: Ed
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Stato Iscrizione
+                    Stato Anagrafica
                   </label>
                   <select
                     value={formData.stato}
