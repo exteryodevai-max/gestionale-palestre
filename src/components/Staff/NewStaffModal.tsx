@@ -22,12 +22,20 @@ interface StaffFormData {
   // Nuovi campi staff
   titolo_studio: string
   diploma_brevetti: string
-  brevetti_scadenza: string
   paga_oraria: number
   modalita_pagamento: string
   partita_iva: string
   tipo_contratto: string
   note_contrattuali: string
+}
+
+interface CertificationFormData {
+  nome_certificazione: string
+  data_scadenza: string
+  data_rilascio: string
+  ente_rilascio: string
+  numero_certificato: string
+  note: string
 }
 
 export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModalProps) {
@@ -45,7 +53,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
     // Nuovi campi staff
     titolo_studio: '',
     diploma_brevetti: '',
-    brevetti_scadenza: '',
     paga_oraria: 0,
     modalita_pagamento: 'oraria',
     partita_iva: '',
@@ -53,6 +60,7 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
     note_contrattuali: ''
   })
   
+  const [certificazioni, setCertificazioni] = useState<CertificationFormData[]>([])
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -118,7 +126,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
         // Nuovi campi staff
         titolo_studio: formData.titolo_studio.trim() || null,
         diploma_brevetti: formData.diploma_brevetti.trim() || null,
-        brevetti_scadenza: formData.brevetti_scadenza || null,
         paga_oraria: formData.paga_oraria || null,
         modalita_pagamento: formData.modalita_pagamento,
         partita_iva: formData.partita_iva.trim() || null,
@@ -133,6 +140,33 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
         .single()
 
       if (error) throw error
+
+      // Inserisci le certificazioni se presenti
+      if (certificazioni.length > 0) {
+        const certificazioniData = certificazioni
+          .filter(cert => cert.nome_certificazione.trim() && cert.data_scadenza)
+          .map(cert => ({
+            user_id: data.id,
+            nome_certificazione: cert.nome_certificazione.trim(),
+            data_scadenza: cert.data_scadenza,
+            data_rilascio: cert.data_rilascio || null,
+            ente_rilascio: cert.ente_rilascio.trim() || null,
+            numero_certificato: cert.numero_certificato.trim() || null,
+            note: cert.note.trim() || null,
+            attiva: true
+          }))
+
+        if (certificazioniData.length > 0) {
+          const { error: certError } = await supabase
+            .from('staff_certificazioni')
+            .insert(certificazioniData)
+
+          if (certError) {
+            console.error('❌ Errore inserimento certificazioni:', certError)
+            // Non blocchiamo la creazione dello staff per errori nelle certificazioni
+          }
+        }
+      }
 
       console.log('✅ Nuovo membro staff creato:', data)
       
@@ -150,7 +184,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
         // Reset nuovi campi staff
         titolo_studio: '',
         diploma_brevetti: '',
-        brevetti_scadenza: '',
         paga_oraria: 0,
         modalita_pagamento: 'oraria',
         partita_iva: '',
@@ -158,6 +191,7 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
         note_contrattuali: ''
       })
       
+      setCertificazioni([])
       onStaffCreated()
       onClose()
       
@@ -185,6 +219,27 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
       staff: 'Staff'
     }
     return labels[role]
+  }
+
+  const addCertification = () => {
+    setCertificazioni(prev => [...prev, {
+      nome_certificazione: '',
+      data_scadenza: '',
+      data_rilascio: '',
+      ente_rilascio: '',
+      numero_certificato: '',
+      note: ''
+    }])
+  }
+
+  const removeCertification = (index: number) => {
+    setCertificazioni(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateCertification = (index: number, field: keyof CertificationFormData, value: string) => {
+    setCertificazioni(prev => prev.map((cert, i) => 
+      i === index ? { ...cert, [field]: value } : cert
+    ))
   }
 
   if (!isOpen) return null

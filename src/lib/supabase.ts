@@ -26,6 +26,20 @@ export type BookingStatus = 'prenotato' | 'presente' | 'no_show' | 'disdetto' //
 export type EquipmentStatus = 'attiva' | 'guasta' | 'fuori_uso' | 'manutenzione'
 export type NotificationType = 'info' | 'warning' | 'success' | 'error'
 
+export interface StaffCertification {
+  id: string
+  user_id: string
+  nome_certificazione: string
+  data_scadenza: string
+  data_rilascio?: string
+  ente_rilascio?: string
+  numero_certificato?: string
+  note?: string
+  attiva: boolean
+  creato_il: string
+  aggiornato_il: string
+}
+
 export interface SubscriptionProduct {
   id: string
   name: string
@@ -62,12 +76,13 @@ export interface User {
   // Nuovi campi per dettagli staff
   titolo_studio?: string
   diploma_brevetti?: string
-  brevetti_scadenza?: string
   paga_oraria?: number
   modalita_pagamento?: string
   partita_iva?: string
   tipo_contratto?: string
   note_contrattuali?: string
+  // Relazione con certificazioni
+  certificazioni?: StaffCertification[]
 }
 
 export interface Member {
