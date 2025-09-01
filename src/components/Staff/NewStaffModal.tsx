@@ -706,16 +706,8 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                   />
                 </div>
               </div>
-            </div>
-
-            {/* Informazioni Contrattuali */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Briefcase className="w-5 h-5 mr-2 text-gray-600" />
-                Informazioni Contrattuali
-              </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tipo Contratto
@@ -761,52 +753,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
                 />
-              </div>
-            </div>
-
-            {/* Informazioni Economiche */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <DollarSign className="w-5 h-5 mr-2 text-gray-600" />
-                Informazioni Economiche
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Modalità di Pagamento
-                  </label>
-                  <select
-                    value={formData.modalita_pagamento}
-                    onChange={(e) => handleInputChange('modalita_pagamento', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  >
-                    <option value="oraria">Paga Oraria</option>
-                    <option value="mensile">Stipendio Mensile</option>
-                    <option value="percentuale">Percentuale su Corsi</option>
-                    <option value="forfait">Forfait</option>
-                    <option value="mista">Modalità Mista</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {formData.modalita_pagamento === 'oraria' ? 'Paga Oraria (€/h)' :
-                     formData.modalita_pagamento === 'mensile' ? 'Stipendio Mensile (€)' :
-                     formData.modalita_pagamento === 'percentuale' ? 'Percentuale (%)' :
-                     formData.modalita_pagamento === 'forfait' ? 'Forfait (€)' :
-                     'Importo Base (€)'}
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step={formData.modalita_pagamento === 'percentuale' ? '0.1' : '0.01'}
-                    value={formData.paga_oraria}
-                    onChange={(e) => handleInputChange('paga_oraria', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder={formData.modalita_pagamento === 'percentuale' ? '15.0' : '0.00'}
-                  />
-                </div>
               </div>
             </div>
 

@@ -656,6 +656,53 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
                     placeholder={formData.modalita_pagamento === 'percentuale' ? '15.0' : '0.00'}
                   />
                 </div>
+              
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo Contratto
+                  </label>
+                  <select
+                    value={formData.tipo_contratto}
+                    onChange={(e) => handleInputChange('tipo_contratto', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Seleziona tipo contratto...</option>
+                    <option value="dipendente">Dipendente</option>
+                    <option value="collaboratore">Collaboratore</option>
+                    <option value="freelance">Freelance</option>
+                    <option value="stagista">Stagista</option>
+                    <option value="volontario">Volontario</option>
+                    <option value="altro">Altro</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Partita IVA
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.partita_iva}
+                    onChange={(e) => handleInputChange('partita_iva', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="12345678901"
+                    maxLength={11}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Note Contrattuali
+                </label>
+                <textarea
+                  value={formData.note_contrattuali}
+                  onChange={(e) => handleInputChange('note_contrattuali', e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
+                />
               </div>
             </div>
 
