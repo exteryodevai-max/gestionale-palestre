@@ -384,7 +384,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
               </div>
             </div>
 
-            {/* Note */}
             {/* Formazione e Qualifiche */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -405,16 +404,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                     placeholder="es. Laurea in Scienze Motorie, Diploma ISEF"
                   />
                 </div>
-              
-              <textarea
-                value={formData.note}
-                onChange={(e) => handleInputChange('note', e.target.value)}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="Note, competenze, orari di lavoro, informazioni aggiuntive..."
-              />
-            </div>
-          </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -427,17 +416,7 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                 </div>
-          {/* Footer */}
-          <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200 bg-gray-50">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Annulla
-            </button>
-            <button
-              type="submit"
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Diplomi e Brevetti
@@ -452,7 +431,7 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                 </div>
               </div>
             </div>
-              disabled={loading}
+
             {/* Informazioni Contrattuali */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -479,7 +458,7 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                     <option value="altro">Altro</option>
                   </select>
                 </div>
-              className="flex items-center space-x-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Partita IVA
@@ -494,8 +473,21 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                   />
                 </div>
               </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Note Contrattuali
+                </label>
+                <textarea
+                  value={formData.note_contrattuali}
+                  onChange={(e) => handleInputChange('note_contrattuali', e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
+                />
+              </div>
             </div>
-            >
+
             {/* Informazioni Economiche */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -520,7 +512,7 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                     <option value="mista">Modalità Mista</option>
                   </select>
                 </div>
-              {loading ? (
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     {formData.modalita_pagamento === 'oraria' ? 'Paga Oraria (€/h)' :
@@ -540,34 +532,49 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
                   />
                 </div>
               </div>
-                <>
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Note Contrattuali
-                </label>
-                <textarea
-                  value={formData.note_contrattuali}
-                  onChange={(e) => handleInputChange('note_contrattuali', e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
-                />
-              </div>
             </div>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+
             {/* Note Generali */}
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <FileText className="w-5 h-5 mr-2 text-gray-600" />
                 Note Generali
               </h3>
+              
+              <textarea
+                value={formData.note}
+                onChange={(e) => handleInputChange('note', e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="Note generali, competenze aggiuntive, informazioni varie..."
+              />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200 bg-gray-50">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Annulla
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex items-center space-x-2 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   <span>Creazione...</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
                   <span>Crea Staff</span>
-                placeholder="Note generali, competenze aggiuntive, informazioni varie..."
+                </>
               )}
             </button>
           </div>
