@@ -75,7 +75,6 @@ export interface User {
   note?: string
   // Nuovi campi per dettagli staff
   titolo_studio?: string
-  diploma_brevetti?: string
   paga_oraria?: number
   modalita_pagamento?: string
   partita_iva?: string

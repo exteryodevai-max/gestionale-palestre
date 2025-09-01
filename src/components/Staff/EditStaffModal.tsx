@@ -23,7 +23,6 @@ interface StaffFormData {
   // Nuovi campi staff
   titolo_studio: string
   diploma_brevetti: string
-  brevetti_scadenza: string
   paga_oraria: number
   modalita_pagamento: string
   partita_iva: string
@@ -73,7 +72,6 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
         // Pre-popola nuovi campi staff
         titolo_studio: staff.titolo_studio || '',
         diploma_brevetti: staff.diploma_brevetti || '',
-        brevetti_scadenza: staff.brevetti_scadenza || '',
         paga_oraria: staff.paga_oraria || 0,
         modalita_pagamento: staff.modalita_pagamento || 'oraria',
         partita_iva: staff.partita_iva || '',
@@ -148,7 +146,6 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
         // Nuovi campi staff
         titolo_studio: formData.titolo_studio.trim() || null,
         diploma_brevetti: formData.diploma_brevetti.trim() || null,
-        brevetti_scadenza: formData.brevetti_scadenza || null,
         paga_oraria: formData.paga_oraria || null,
         modalita_pagamento: formData.modalita_pagamento,
         partita_iva: formData.partita_iva.trim() || null,

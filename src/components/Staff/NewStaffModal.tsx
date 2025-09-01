@@ -21,7 +21,6 @@ interface StaffFormData {
   note: string
   // Nuovi campi staff
   titolo_studio: string
-  diploma_brevetti: string
   paga_oraria: number
   modalita_pagamento: string
   partita_iva: string
@@ -52,7 +51,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
     note: '',
     // Nuovi campi staff
     titolo_studio: '',
-    diploma_brevetti: '',
     paga_oraria: 0,
     modalita_pagamento: 'oraria',
     partita_iva: '',
@@ -183,7 +181,6 @@ export function NewStaffModal({ isOpen, onClose, onStaffCreated }: NewStaffModal
         note: '',
         // Reset nuovi campi staff
         titolo_studio: '',
-        diploma_brevetti: '',
         paga_oraria: 0,
         modalita_pagamento: 'oraria',
         partita_iva: '',
