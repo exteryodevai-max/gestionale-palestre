@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { X, User, Mail, Phone, Shield, Save, AlertCircle, Info, GraduationCap, DollarSign, FileText, Briefcase } from 'lucide-react'
+import { X, User, Mail, Phone, Shield, Save, AlertCircle, Info, GraduationCap, DollarSign, FileText, Briefcase, Plus } from 'lucide-react'
 import { supabase, UserRole } from '../../lib/supabase'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -45,7 +45,6 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
     // Nuovi campi staff
     titolo_studio: '',
     diploma_brevetti: '',
-    brevetti_scadenza: '',
     paga_oraria: 0,
     modalita_pagamento: 'oraria',
     partita_iva: '',
@@ -55,6 +54,7 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
   
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [certificazioni, setCertificazioni] = useState<any[]>([])
 
   // Pre-populate form when staff changes
   useEffect(() => {
@@ -80,6 +80,29 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
       })
     }
   }, [staff])
+
+  const addCertification = () => {
+    setCertificazioni(prev => [...prev, {
+      nome_certificazione: '',
+      data_scadenza: '',
+      data_rilascio: '',
+      ente_rilascio: '',
+      numero_certificato: '',
+      note: ''
+    }])
+  }
+
+  const removeCertification = (index: number) => {
+    setCertificazioni(prev => prev.map((cert, i) => 
+      i === index ? { ...cert, toDelete: true } : cert
+    ))
+  }
+
+  const updateCertification = (index: number, field: string, value: string) => {
+    setCertificazioni(prev => prev.map((cert, i) => 
+      i === index ? { ...cert, [field]: value } : cert
+    ))
+  }
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
@@ -656,53 +679,6 @@ export function EditStaffModal({ isOpen, onClose, onStaffUpdated, staff }: EditS
                     placeholder={formData.modalita_pagamento === 'percentuale' ? '15.0' : '0.00'}
                   />
                 </div>
-              
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tipo Contratto
-                  </label>
-                  <select
-                    value={formData.tipo_contratto}
-                    onChange={(e) => handleInputChange('tipo_contratto', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Seleziona tipo contratto...</option>
-                    <option value="dipendente">Dipendente</option>
-                    <option value="collaboratore">Collaboratore</option>
-                    <option value="freelance">Freelance</option>
-                    <option value="stagista">Stagista</option>
-                    <option value="volontario">Volontario</option>
-                    <option value="altro">Altro</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Partita IVA
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.partita_iva}
-                    onChange={(e) => handleInputChange('partita_iva', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="12345678901"
-                    maxLength={11}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Note Contrattuali
-                </label>
-                <textarea
-                  value={formData.note_contrattuali}
-                  onChange={(e) => handleInputChange('note_contrattuali', e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Condizioni particolari, benefit, orari di lavoro, clausole speciali..."
-                />
               </div>
             </div>
 
